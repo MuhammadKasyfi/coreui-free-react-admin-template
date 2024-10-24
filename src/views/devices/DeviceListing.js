@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   CCard,
   CCardBody,
@@ -12,17 +12,17 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-} from '@coreui/react';
+} from '@coreui/react'
 
 const DeviceListing = () => {
-  const [devices, setDevices] = useState([]); // State to hold fetched devices
-  const [loading, setLoading] = useState(true); // State for loading status
-  const [error, setError] = useState(null); // State to handle errors
+  const [devices, setDevices] = useState([]) // State to hold fetched devices
+  const [loading, setLoading] = useState(true) // State for loading status
+  const [error, setError] = useState(null) // State to handle errors
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         // Uncomment and replace the URL with the actual API endpoint from Emerson Data Studio
         // const response = await fetch('API_ENDPOINT_HERE');
         // if (!response.ok) {
@@ -51,16 +51,16 @@ const DeviceListing = () => {
             SerialNo: '9164776',
             Circuit: 'C1',
           },
-        ]);
+        ])
       } catch (error) {
-        setError(error.message); // Set error message if fetching fails
+        setError(error.message) // Set error message if fetching fails
       } finally {
-        setLoading(false); // Set loading to false regardless of success or failure
+        setLoading(false) // Set loading to false regardless of success or failure
       }
-    };
+    }
 
-    fetchDevices();
-  }, []); // Empty dependency array means this runs once on component mount
+    fetchDevices()
+  }, []) // Empty dependency array means this runs once on component mount
 
   return (
     <CRow>
@@ -135,7 +135,7 @@ const DeviceListing = () => {
         </CCard>
       </CCol>
     </CRow>
-  );
-};
+  )
+}
 
-export default DeviceListing;
+export default DeviceListing
