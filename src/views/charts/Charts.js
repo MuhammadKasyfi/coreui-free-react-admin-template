@@ -9,6 +9,7 @@ import {
   CChartRadar,
 } from '@coreui/react-chartjs'
 import { DocsCallout } from 'src/components'
+import GaugeComponent from 'react-gauge-component'
 
 const Charts = () => {
   const random = () => Math.round(Math.random() * 100)
@@ -21,6 +22,40 @@ const Charts = () => {
           href="components/chart"
           content="React wrapper component for Chart.js 3.0, the most popular charting library."
         />
+      </CCol>
+      <CCol xs={12}>
+        <CCard className="mb-4">
+          <CCardHeader>Alert Summary Charlie</CCardHeader>
+          <CCardBody>
+            <GaugeComponent
+              arc={{
+                subArcs: [
+                  {
+                    limit: 20,
+                    color: '#EA4228',
+                    showTick: true
+                  },
+                  {
+                    limit: 40,
+                    color: '#F58B19',
+                    showTick: true
+                  },
+                  {
+                    limit: 60,
+                    color: '#F5CD19',
+                    showTick: true
+                  },
+                  {
+                    limit: 100,
+                    color: '#5BE12C',
+                    showTick: true
+                  },
+                ]
+              }}
+              value={50}
+            />
+          </CCardBody>
+        </CCard>
       </CCol>
       <CCol xs={6}>
         <CCard className="mb-4">
