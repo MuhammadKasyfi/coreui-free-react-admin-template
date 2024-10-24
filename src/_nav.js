@@ -18,13 +18,89 @@ import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
   {
     component: CNavItem,
+    name: 'Home',
+    to: '/home',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    // badge: {
+    //   color: 'info',
+    //   text: 'NEW',
+    // },
+  },
+  {
+    component: CNavGroup,
     name: 'Dashboard',
     to: '/dashboard',
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: 'info',
-      text: 'NEW',
-    },
+    items: [
+      {
+        component: CNavItem,
+        name: 'Alert Summary Bravo',
+        to: '/dashboard/AlertSummaryBravo',
+      },
+      {
+        component: CNavItem,
+        name: 'Alert Summary Charlie',
+        to: '/dashboard/AlertSummaryCharlie',
+      },
+      {
+        component: CNavItem,
+        name: 'Statistics',
+        to: '/dashboard/Statistics',
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Alerts',
+    to: '/alert',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Alert Monitor',
+        to: '/alert/AlertMonitor',
+      },
+      {
+        component: CNavItem,
+        name: 'Active Alert Grid',
+        to: '/alert/ActiveAlertGrid',
+      },
+      {
+        component: CNavItem,
+        name: 'Alert Log',
+        to: '/alert/AlertLog',
+      },
+      {
+        component: CNavItem,
+        name: 'Alert Log by Device',
+        to: '/alert/AlertLogbyDevice',
+      },
+      {
+        component: CNavItem,
+        name: 'Wireless Battery Management',
+        to: '/alert/WirelessBatteryManagement',
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Devices',
+    to: '/devices',
+    items: [
+      {
+        component: CNavItem,
+        name: 'Device Listing',
+        to: '/devices/DeviceListing',
+      },
+      {
+        component: CNavItem,
+        name: 'Device Population',
+        to: '/devices/DevicePopulation',
+      },
+      {
+        component: CNavItem,
+        name: 'Device Alert Statistics',
+        to: '/devices/DeviceAlertStatistics',
+      },
+    ],
   },
   {
     component: CNavTitle,
