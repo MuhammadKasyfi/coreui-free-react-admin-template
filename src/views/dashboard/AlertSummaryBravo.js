@@ -46,6 +46,14 @@ const dummyData = {
   ],
 }
 
+// TODO REFACTOR
+// IDEAS: ROW 1 - ALERT SUMMARY
+//        ROW 2 - LIST
+//        ROW 3 - GAUGE, CHARTS, AND TABLE
+//        ROW 4 COL-4 - GAUGE
+//        ROW 4 COL-4 - CHART 1 + TABLE
+//        ROW 4 COL-4 - CHART 2
+
 const AlertSummaryBravo = () => {
   return (
     <>
