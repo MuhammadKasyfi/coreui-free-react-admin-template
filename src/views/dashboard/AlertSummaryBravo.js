@@ -32,9 +32,9 @@ const AlertSummaryBravo = () => {
   useEffect(() => {
     fetchData = async() => {
       try {
-        const response = await axios.get('localhost:8002/api/checkstatus', { 
+        const response = await axios.get('localhost:6512/api/checkstatus', { 
           params: { }, 
-          // headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
+          headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
         });
 
       setData(response.data);
@@ -57,9 +57,9 @@ const AlertSummaryBravo = () => {
           <CCol>
             <h6>
               Test
-              {/* {data && (
+              {data && (
                 <pre>{JSON.stringify(data,null, 2)}</pre>
-              )} */}
+              )}
             </h6>
           </CCol>
       </CRow>
