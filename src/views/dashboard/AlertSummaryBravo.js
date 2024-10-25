@@ -30,7 +30,9 @@ import {
 // auth: m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=
 
 const AlertSummaryBravo = () => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+  const [demoData, setDemoData] = useState([]);
+  // const [demoData, setDemoData] = useState([]);
 
   // useEffect(() => {
   //   const fetchData = async() => {
@@ -49,46 +51,94 @@ const AlertSummaryBravo = () => {
   //   // fetchData();
   // }, []);
   
-  const getToken = async() => {
-    try{
-      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo Data/Process Data/DC4711'
-        // {
-        // client_id: 'OpticsWEBAPIL4',
-        // client_secret: 'EmersonProcess#1',
-        // credentials: "include"
-      // }
-      );
-      // const token = response.data.access_token;
-      // setData(token);
-      // console.log('Token:', response.data.access_token);
-      console.log('Response:', response.data);
-      setData(response.data);
-    } catch(error){
-      console.error("Error fetching data: ", error);
-    }
-  }
+  const getOAuthToken = async() => {
+      const tokenUrl = 'https://localhost:8002/api/oauth2/token';
+
+      const credentials = {
+        grant_type: 'password',
+        authority: 'builtin',
+        username: 'OpticsWEBAPIL4',
+        password: 'EmersonProcess#1',
+      };
+      try {
+        const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        });
+
+        const token = response.data.access_token;
+        console.log('Token: ', token);
+
+        return token;
+      }catch (error){
+        console.error("Error fetchin token: ", error);
+        return null;
+      }
+    };
+
+  // useEffect(() => {
+  //   getToken(); // Call getToken when the component mounts
+  // }, []);
+  const getDemoData = async(token) => {
+    console.log('Token (test): ', token);
+        try {
+          const response = await axios.get('http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', { 
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+          });
+          
+        console.log('Response: ', response.data);
+        setDemoData(response.data);
+        } catch(error){
+          console.error('Error fetching data: ', error);
+          // Optionally log more specific error details if available
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+          }
+        }
+  };
 
   useEffect(() => {
-    getToken(); // Call getToken when the component mounts
-  }, []);
+    const fetchData = async () => {
+      const token = await getOAuthToken();
+      if(token){
+        await getDemoData(token);
+      }
+  }
+
+  fetchData(); //fetch token
     
+  }, []);
+  
   return (
     <>
-      <CRow>
-          <CCol>
-            <h6>Data</h6>
-          </CCol>
-      </CRow>
-      <CRow>
-          <CCol>
-            <h6>
-              Test
-              {data && (
-                <pre>{JSON.stringify(data,null, 2)}</pre>
-              )}
-            </h6>
-          </CCol>
-      </CRow>
+     <CCard>
+      <CCardHeader>
+        <h5>Demo Data</h5>
+      </CCardHeader>
+      <CCardBody>
+        {demoData && demoData.length > 0 ? (
+          demoData.map((item, index) => (
+            <CRow key={index}>
+              <CCol>
+                <h6>Item {index + 1}</h6>
+                <pre>{JSON.stringify(item, null, 2)}</pre>
+              </CCol>
+            </CRow>
+          ))
+        ) : (
+          <CRow>
+            <CCol>
+              <p>No demo data available.</p>
+            </CCol>
+          </CRow>
+        )}
+      </CCardBody>
+    </CCard>
     </>
   )
 
