@@ -75,10 +75,16 @@ const AlertSummaryBravo = () => {
         'http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711',
         {
           headers: {
-            Authorization: `Basic ${base64Credentials}`,
+            'Authorization': `Basic ${base64Credentials}`,
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            // 'Authorization': `Bearer ${token}`,
           },
         }
       )
+
       // EXECUTION STOPS HERE
       console.log('Response: ', response.data);
       setDemoData(response.data)
