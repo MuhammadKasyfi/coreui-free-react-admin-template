@@ -72,33 +72,27 @@ const AlertSummaryBravo = () => {
 
         return token;
       }catch (error){
-        console.error("Error fetchin token: ", error);
+        console.error("Error fetching token: ", error);
         return null;
       }
     };
 
-  // useEffect(() => {
-  //   getToken(); // Call getToken when the component mounts
-  // }, []);
   const getDemoData = async(token) => {
     console.log('Token (test): ', token);
         try {
-          const response = await axios.get('http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', { 
+          console.log('Function Entered');
+          const identifier = encodeURIComponent('/System/Core/Examples/Demo Data/Process Data/DC4711');
+          const response = await axios.get(`http://localhost:8002/api/v2/read?identifier=${identifier}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
-            }
+            },
           });
           
         console.log('Response: ', response.data);
+        
         setDemoData(response.data);
         } catch(error){
           console.error('Error fetching data: ', error);
-          // Optionally log more specific error details if available
-          if (error.response) {
-            console.error('Response data:', error.response.data);
-            console.error('Response status:', error.response.status);
-            console.error('Response headers:', error.response.headers);
-          }
         }
   };
 
