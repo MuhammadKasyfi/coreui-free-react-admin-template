@@ -31,24 +31,6 @@ import {
 const AlertSummaryBravo = () => {
   // const [data, setData] = useState([]);
   const [demoData, setDemoData] = useState([])
-  // const [demoData, setDemoData] = useState([]);
-
-  // useEffect(() => {
-  //   const fetchData = async() => {
-  //     try {
-  //       const response = await axios.get('http://localhost:6512/api/security/oauth2/token', {
-  //         params: { },
-  //         // headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
-  //       });
-
-  //     setData(response.data);
-  //     } catch(error){
-  //       console.error('Error fetching data: ', error);
-  //     }
-  //   };
-
-  //   // fetchData();
-  // }, []);
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -80,45 +62,51 @@ const AlertSummaryBravo = () => {
   //   getToken(); // Call getToken when the component mounts
   // }, []);
   const getDemoData = async (token) => {
-    console.log('Token (test): ', token)
+    // console.log('Token (test): ', token);
+    const username = 'OpticsWEBAPIL4'; // Replace with your username
+    const password = 'EmersonProcess#1'; // Replace with your password
+    const base64Credentials = btoa(`${username}:${password}`); // Encode credentials
+    console.log('Creds (test): ', username, password);
+
     try {
+      console.log('Entered');
+      // TODO CHECK URL/METHODS
       const response = await axios.get(
         'http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711',
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Basic ${base64Credentials}`,
           },
-        },
+        }
       )
-
-      console.log('Response: ', response.data)
+      // EXECUTION STOPS HERE
+      console.log('Response: ', response.data);
       setDemoData(response.data)
+      console.log('Finished');
     } catch (error) {
-      console.error('Error fetching data: ', error)
-      // Optionally log more specific error details if available
-      if (error.response) {
-        console.error('Response data:', error.response.data)
-        console.error('Response status:', error.response.status)
-        console.error('Response headers:', error.response.headers)
-      } else if (error.request) {
-        console.error('No response received:', error.request)
-      } else {
-        console.error('Error in setting up request:', error.message)
+      
+      if (error.code === 'ECONNABORTED') {
+        console.error('Request timed out:', error.message);
+      } else{
+        console.error('Error fetching data: ', error)
       }
     }
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = await getOAuthToken()
-      if (token) {
-        await getDemoData(token)
-      }
-    }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = await getOAuthToken()
+  //     if (token) {
+  //       await getDemoData(token)
+  //     }
+  //   }
 
-    fetchData() //fetch token
-  }, [])
+  //   fetchData() //fetch token
+  // }, [])
+
+  useEffect(() => {
+    getDemoData(); // Fetch demo data on component mount
+  }, []);
 
   return (
     <>
@@ -127,7 +115,7 @@ const AlertSummaryBravo = () => {
           <h5>Demo Data</h5>
         </CCardHeader>
         <CCardBody>
-          {demoData && demoData.length > 0 ? (
+          {demoData.length > 0 ? (
             demoData.map((item, index) => (
               <CRow key={index}>
                 <CCol>
