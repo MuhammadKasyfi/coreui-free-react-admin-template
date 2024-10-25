@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import GaugeComponent from 'react-gauge-component'
 import { CChartDoughnut } from '@coreui/react-chartjs'
@@ -16,6 +16,12 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
+// const cors = require('cors');
+// const express = require('express');
+// const app = express();
+
+// app.use(cors()); // Enable CORS for all routes
+
 
 // DB Connector:
 // 
@@ -25,27 +31,47 @@ import {
 
 const AlertSummaryBravo = () => {
   const [data, setData] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchData = async() => {
+  //     try {
+  //       const response = await axios.get('http://localhost:6512/api/security/oauth2/token', { 
+  //         params: { }, 
+  //         // headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
+  //       });
+
+  //     setData(response.data);
+  //     } catch(error){
+  //       console.error('Error fetching data: ', error);
+  //     }
+  //   };
+
+  //   // fetchData();
+  // }, []);
+  
+  const getToken = async() => {
+    try{
+      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo Data/Process Data/DC4711'
+        // {
+        // client_id: 'OpticsWEBAPIL4',
+        // client_secret: 'EmersonProcess#1',
+        // credentials: "include"
+      // }
+      );
+      // const token = response.data.access_token;
+      // setData(token);
+      // console.log('Token:', response.data.access_token);
+      console.log('Response:', response.data);
+      setData(response.data);
+    } catch(error){
+      console.error("Error fetching data: ", error);
+    }
+  }
 
   useEffect(() => {
-    fetchData = async() => {
-      try {
-        const response = await axios.get('localhost:6512/api/checkstatus', { 
-          params: { }, 
-          headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
-        });
-
-      setData(response.data);
-      } catch(error){
-        console.error('Error fetching data: ', error);
-      }
-    };
-
-    //
+    getToken(); // Call getToken when the component mounts
   }, []);
-
+    
   return (
     <>
       <CRow>
