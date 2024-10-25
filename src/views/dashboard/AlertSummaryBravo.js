@@ -22,23 +22,22 @@ import {
 
 // app.use(cors()); // Enable CORS for all routes
 
-
 // DB Connector:
-// 
+//
 // Path Example: /System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_healthindex
 // C:\Emerson\AMSOptics\site\System\Core\OpticsSource\AMS Device Manager\PSSMY SUBANG\EPM Subang\Demo Set\HART Multiplexer\HART\LCV-2011\_healthindex
 // auth: m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=
 
 const AlertSummaryBravo = () => {
   // const [data, setData] = useState([]);
-  const [demoData, setDemoData] = useState([]);
+  const [demoData, setDemoData] = useState([])
   // const [demoData, setDemoData] = useState([]);
 
   // useEffect(() => {
   //   const fetchData = async() => {
   //     try {
-  //       const response = await axios.get('http://localhost:6512/api/security/oauth2/token', { 
-  //         params: { }, 
+  //       const response = await axios.get('http://localhost:6512/api/security/oauth2/token', {
+  //         params: { },
   //         // headers: {Authorization: `m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=`}
   //       });
 
@@ -50,89 +49,102 @@ const AlertSummaryBravo = () => {
 
   //   // fetchData();
   // }, []);
-  
-  const getOAuthToken = async() => {
-      const tokenUrl = 'https://localhost:8002/api/oauth2/token';
 
-      const credentials = {
-        grant_type: 'password',
-        authority: 'builtin',
-        username: 'OpticsWEBAPIL4',
-        password: 'EmersonProcess#1',
-      };
-      try {
-        const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
+  const getOAuthToken = async () => {
+    const tokenUrl = 'https://localhost:8002/api/oauth2/token'
+
+    const credentials = {
+      grant_type: 'password',
+      authority: 'builtin',
+      username: 'OpticsWEBAPIL4',
+      password: 'EmersonProcess#1',
+    }
+    try {
+      const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+
+      const token = response.data.access_token
+      console.log('Token: ', token)
+
+      return token
+    } catch (error) {
+      console.error('Error fetchin token: ', error)
+      return null
+    }
+  }
+
+  // useEffect(() => {
+  //   getToken(); // Call getToken when the component mounts
+  // }, []);
+  const getDemoData = async (token) => {
+    console.log('Token (test): ', token)
+    try {
+      const response = await axios.get(
+        'http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711',
+        {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-        });
+        },
+      )
 
-        const token = response.data.access_token;
-        console.log('Token: ', token);
-
-        return token;
-      }catch (error){
-        console.error("Error fetching token: ", error);
-        return null;
+      console.log('Response: ', response.data)
+      setDemoData(response.data)
+    } catch (error) {
+      console.error('Error fetching data: ', error)
+      // Optionally log more specific error details if available
+      if (error.response) {
+        console.error('Response data:', error.response.data)
+        console.error('Response status:', error.response.status)
+        console.error('Response headers:', error.response.headers)
+      } else if (error.request) {
+        console.error('No response received:', error.request)
+      } else {
+        console.error('Error in setting up request:', error.message)
       }
-    };
-
-  const getDemoData = async(token) => {
-    console.log('Token (test): ', token);
-        try {
-          console.log('Function Entered');
-          const identifier = encodeURIComponent('/System/Core/Examples/Demo Data/Process Data/DC4711');
-          const response = await axios.get(`http://localhost:8002/api/v2/read?identifier=${identifier}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-        console.log('Response: ', response.data);
-        
-        setDemoData(response.data);
-        } catch(error){
-          console.error('Error fetching data: ', error);
-        }
-  };
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getOAuthToken();
-      if(token){
-        await getDemoData(token);
+      const token = await getOAuthToken()
+      if (token) {
+        await getDemoData(token)
       }
-  }
+    }
 
-  fetchData(); //fetch token
-    
-  }, []);
-  
+    fetchData() //fetch token
+  }, [])
+
   return (
     <>
-     <CCard>
-      <CCardHeader>
-        <h5>Demo Data</h5>
-      </CCardHeader>
-      <CCardBody>
-        {demoData && demoData.length > 0 ? (
-          demoData.map((item, index) => (
-            <CRow key={index}>
+      <CCard>
+        <CCardHeader>
+          <h5>Demo Data</h5>
+        </CCardHeader>
+        <CCardBody>
+          {demoData && demoData.length > 0 ? (
+            demoData.map((item, index) => (
+              <CRow key={index}>
+                <CCol>
+                  <h6>Item {index + 1}</h6>
+                  <pre>{JSON.stringify(item, null, 2)}</pre>
+                </CCol>
+              </CRow>
+            ))
+          ) : (
+            <CRow>
               <CCol>
-                <h6>Item {index + 1}</h6>
-                <pre>{JSON.stringify(item, null, 2)}</pre>
+                <p>No demo data available.</p>
               </CCol>
             </CRow>
-          ))
-        ) : (
-          <CRow>
-            <CCol>
-              <p>No demo data available.</p>
-            </CCol>
-          </CRow>
-        )}
-      </CCardBody>
-    </CCard>
+          )}
+        </CCardBody>
+      </CCard>
     </>
   )
 
@@ -217,8 +229,6 @@ const AlertSummaryBravo = () => {
 //       </>
 //     )
 //   }
-  
-
 
 // const dummyData = {
 //   daily: 98,
