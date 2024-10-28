@@ -16,20 +16,8 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-// const cors = require('cors');
-// const express = require('express');
-// const app = express();
-
-// app.use(cors()); // Enable CORS for all routes
-
-// DB Connector:
-//
-// Path Example: /System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_healthindex
-// C:\Emerson\AMSOptics\site\System\Core\OpticsSource\AMS Device Manager\PSSMY SUBANG\EPM Subang\Demo Set\HART Multiplexer\HART\LCV-2011\_healthindex
-// auth: m6SH7j707Zin3cGkoGgVqjVDH4vv26s5EUqHrDgxvWY=
 
 const AlertSummaryBravo = () => {
-  // const [data, setData] = useState([]);
   const [demoData, setDemoData] = useState([])
 
   const getOAuthToken = async () => {
@@ -59,26 +47,11 @@ const AlertSummaryBravo = () => {
     }
   }
   const getDemoData = async (token) => {
-    // console.log('Token (test): ', token);
-    
+    const opticsURL = 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
+    const identifier = 'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
     try {
-      // TODO CHECK URL/METHODS
-      // const options = {
-      //   auth: {
-      //     // authority: 'builtin',
-      //     username: 'OpticsWEBAPIL4',
-      //     password: 'EmersonProcess#1',
-      //     authority: 'builtin',
-      //     grant_type: 'password',
-      //   },
-      //   authorization: "Bearer ",
-      // };
-
-      // console.log('Options: ', options);
-      // const check = await axios.get('https://localhost:8002/api/checkstatus')
-      // console.log('Check: ', check.data);
-
-      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', {
+        
+      const response = await axios.get(`${opticsURL}/_healthindex`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
@@ -87,6 +60,24 @@ const AlertSummaryBravo = () => {
       )
       console.log('Get all data: ', response.data);
       setDemoData(response.data.data || [])
+      
+      const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
+        //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      }
+      )
+      console.log('Get all data: ', response2.data);
+
+      // Manufacturer: Fish Controls (Asset.Manufacturer property name) 
+      // Protocol: HART
+      // Device Tag: LCV-2011 (retrieve using ../LCV-2011.asset.tag)
+      // Device Type: 9 (retrieve using ../LCV-2011.DeviceTypeCode)
+      // Serial No.: 9756693 (retrieve using ../LCV-2011.Asset.SerialNumber)
+      // Criticality: C1 (retrieve using ../LCV-2011.criticality)
+
     } catch (error) {   
       if (error.code === 'ECONNABORTED') {
         console.error('Request timed out:', error.message);

@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 
-const AuthContext = createContext()
+export const AuthContext = createContext()
 
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
