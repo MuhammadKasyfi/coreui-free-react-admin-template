@@ -41,6 +41,7 @@ const AlertSummaryBravo = () => {
       username: 'OpticsWEBAPIL4',
       password: 'EmersonProcess#1',
     }
+
     try {
       const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
         headers: {
@@ -57,62 +58,48 @@ const AlertSummaryBravo = () => {
       return null
     }
   }
-
-  // useEffect(() => {
-  //   getToken(); // Call getToken when the component mounts
-  // }, []);
   const getDemoData = async (token) => {
-    // console.log('Token (test): ', token);
-    const username = 'OpticsWEBAPIL4'; // Replace with your username
-    const password = 'EmersonProcess#1'; // Replace with your password
-    const base64Credentials = btoa(`${username}:${password}`); // Encode credentials
-    console.log('Creds (test): ', username, password);
-
+    console.log('Token (test): ', token);
+    
     try {
-      console.log('Entered');
       // TODO CHECK URL/METHODS
-      const response = await axios.get(
-        'http://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711',
-        {
-          headers: {
-            'Authorization': `Basic ${base64Credentials}`,
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            // 'Authorization': `Bearer ${token}`,
-          },
-        }
-      )
+      const options = {
+        auth: {
+          // authority: 'builtin',
+          username: 'OpticsWEBAPIL4',
+          password: 'EmersonProcess#1',
+          authority: 'builtin',
+          grant_type: 'password',
+        },
+        authorization: "Bearer ",
+      };
 
-      // EXECUTION STOPS HERE
-      console.log('Response: ', response.data);
+      console.log('Options: ', options);
+      // const check = await axios.get('https://localhost:8002/api/checkstatus')
+      // console.log('Check: ', check.data);
+
+      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', options)
+      console.log('Get all data: ', response.data);
       setDemoData(response.data)
-      console.log('Finished');
-    } catch (error) {
-      
+    } catch (error) {   
       if (error.code === 'ECONNABORTED') {
         console.error('Request timed out:', error.message);
       } else{
-        console.error('Error fetching data: ', error)
+        console.error('Error fetching data: ', error.response.data)
       }
     }
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const token = await getOAuthToken()
-  //     if (token) {
-  //       await getDemoData(token)
-  //     }
-  //   }
-
-  //   fetchData() //fetch token
-  // }, [])
-
   useEffect(() => {
-    getDemoData(); // Fetch demo data on component mount
-  }, []);
+    const fetchData = async () => {
+      const token = await getOAuthToken()
+      if (token) {
+        await getDemoData(token)
+      }
+    }
+
+    fetchData() //fetch token
+  }, [])
 
   return (
     <>
@@ -126,7 +113,11 @@ const AlertSummaryBravo = () => {
               <CRow key={index}>
                 <CCol>
                   <h6>Item {index + 1}</h6>
-                  <pre>{JSON.stringify(item, null, 2)}</pre>
+                  <p><strong>ID:</strong> {item.i}</p>
+                  <p><strong>Path:</strong> {item.p}</p>
+                  <p><strong>Quantity:</strong> {item.q}</p>
+                  <p><strong>Timestamp:</strong> {new Date(item.t).toLocaleString()}</p>
+                  <p><strong>Value:</strong> {item.v}</p>
                 </CCol>
               </CRow>
             ))
