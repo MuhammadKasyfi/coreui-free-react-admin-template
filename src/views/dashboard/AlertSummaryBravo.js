@@ -59,28 +59,34 @@ const AlertSummaryBravo = () => {
     }
   }
   const getDemoData = async (token) => {
-    console.log('Token (test): ', token);
+    // console.log('Token (test): ', token);
     
     try {
       // TODO CHECK URL/METHODS
-      const options = {
-        auth: {
-          // authority: 'builtin',
-          username: 'OpticsWEBAPIL4',
-          password: 'EmersonProcess#1',
-          authority: 'builtin',
-          grant_type: 'password',
-        },
-        authorization: "Bearer ",
-      };
+      // const options = {
+      //   auth: {
+      //     // authority: 'builtin',
+      //     username: 'OpticsWEBAPIL4',
+      //     password: 'EmersonProcess#1',
+      //     authority: 'builtin',
+      //     grant_type: 'password',
+      //   },
+      //   authorization: "Bearer ",
+      // };
 
-      console.log('Options: ', options);
+      // console.log('Options: ', options);
       // const check = await axios.get('https://localhost:8002/api/checkstatus')
       // console.log('Check: ', check.data);
 
-      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', options)
+      const response = await axios.get('https://localhost:8002/api/v2/read?identifier=/System/Core/Examples/Demo%20Data/Process%20Data/DC4711', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+        },
+      }
+      )
       console.log('Get all data: ', response.data);
-      setDemoData(response.data)
+      setDemoData(response.data.data || [])
     } catch (error) {   
       if (error.code === 'ECONNABORTED') {
         console.error('Request timed out:', error.message);
