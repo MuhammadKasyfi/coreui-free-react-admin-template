@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import {
   CCard,
   CCardBody,
@@ -12,59 +12,70 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
+  CFormCheck,
 } from '@coreui/react'
+import { AuthContext } from './AuthContext'
 
 const DeviceListing = () => {
-  const [devices, setDevices] = useState([]) // State to hold fetched devices
-  const [loading, setLoading] = useState(true) // State for loading status
-  const [error, setError] = useState(null) // State to handle errors
+  const { token } = useContext(AuthContext) // Access token from AuthContext
+  const [devices, setDevices] = useState([]) // Holds fetched devices
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [area, setArea] = useState('all')
+  const [deviceType, setDeviceType] = useState('all')
+  const [selectedColumns, setSelectedColumns] = useState(['AMStag', 'Manufacturer', 'DeviceType']) // Default columns
+
+  // Column options for dynamic display
+  const columnOptions = [
+    { label: 'AMStag', value: 'AMStag' },
+    { label: 'Manufacturer', value: 'Manufacturer' },
+    { label: 'Device Type', value: 'DeviceType' },
+    { label: 'Device Rev', value: 'DeviceRev' },
+    { label: 'Protocol', value: 'Protocol' },
+    { label: 'Serial No', value: 'SerialNo' },
+    { label: 'Circuit', value: 'Circuit' },
+  ]
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
         setLoading(true)
-        // Uncomment and replace the URL with the actual API endpoint from Emerson Data Studio
-        // const response = await fetch('API_ENDPOINT_HERE');
-        // if (!response.ok) {
-        //   throw new Error('Network response was not ok');
-        // }
-        // const data = await response.json();
-        // setDevices(data); // Set the fetched data to state
+        const response = await fetch(`API_ENDPOINT_HERE`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
-        // Placeholder data for demonstration purposes
-        setDevices([
-          {
-            AMStag: 'PZT-04',
-            Manufacturer: 'Rosemount',
-            DeviceType: '3051',
-            DeviceRev: '7',
-            Protocol: 'HART',
-            SerialNo: '12777265',
-            Circuit: 'C1',
-          },
-          {
-            AMStag: '017-PZT-01',
-            Manufacturer: 'Rosemount',
-            DeviceType: '3051',
-            DeviceRev: '7',
-            Protocol: 'HART',
-            SerialNo: '9164776',
-            Circuit: 'C1',
-          },
-        ])
+        if (!response.ok) throw new Error('Network response was not ok')
+
+        const data = await response.json()
+        setDevices(data)
       } catch (error) {
-        setError(error.message) // Set error message if fetching fails
+        setError(error.message)
       } finally {
-        setLoading(false) // Set loading to false regardless of success or failure
+        setLoading(false)
       }
     }
 
     fetchDevices()
-  }, []) // Empty dependency array means this runs once on component mount
+  }, [token, area, deviceType]) // Re-fetch data on area or deviceType changes
+
+  const filteredDevices = devices.filter((device) => {
+    return (
+      (area === 'all' || device.Area === area) &&
+      (deviceType === 'all' || device.DeviceType === deviceType)
+    )
+  })
+
+  // Handle column selection changes
+  const handleColumnChange = (column) => {
+    setSelectedColumns((prev) =>
+      prev.includes(column) ? prev.filter((col) => col !== column) : [...prev, column],
+    )
+  }
 
   return (
     <CRow>
-      {/* Main Card for Device Listing */}
       <CCol xs={12}>
         <CCard className="mb-4">
           <CCardHeader>
@@ -75,7 +86,7 @@ const DeviceListing = () => {
               {/* Area Selection */}
               <CCol md={3}>
                 <h5>Area</h5>
-                <CFormSelect aria-label="Select Area">
+                <CFormSelect value={area} onChange={(e) => setArea(e.target.value)}>
                   <option value="all">All</option>
                   <option value="KNTC">KNTC</option>
                   <option value="KNPGB">KNPGB</option>
@@ -85,7 +96,7 @@ const DeviceListing = () => {
               {/* Device Type Filter */}
               <CCol md={3}>
                 <h5>Device Type</h5>
-                <CFormSelect aria-label="Select Device Type">
+                <CFormSelect value={deviceType} onChange={(e) => setDeviceType(e.target.value)}>
                   <option value="all">All</option>
                   <option value="Fieldbus">Fieldbus</option>
                   <option value="Hart-DCS">Hart-DCS</option>
@@ -95,35 +106,40 @@ const DeviceListing = () => {
                 </CFormSelect>
               </CCol>
 
+              {/* Column Selection */}
+              <CCol md={6}>
+                <h5>Select Columns</h5>
+                {columnOptions.map((col) => (
+                  <CFormCheck
+                    key={col.value}
+                    label={col.label}
+                    checked={selectedColumns.includes(col.value)}
+                    onChange={() => handleColumnChange(col.value)}
+                  />
+                ))}
+              </CCol>
+
               {/* Device Details Table */}
               <CCol md={12} className="mt-4">
                 {loading ? (
-                  <div>Loading...</div> // Loading message
+                  <div>Loading...</div>
                 ) : error ? (
-                  <div>Error: {error}</div> // Error message
+                  <div>Error: {error}</div>
                 ) : (
                   <CTable responsive>
                     <CTableHead>
                       <CTableRow>
-                        <CTableHeaderCell>AMStag</CTableHeaderCell>
-                        <CTableHeaderCell>Manufacturer</CTableHeaderCell>
-                        <CTableHeaderCell>Device Type</CTableHeaderCell>
-                        <CTableHeaderCell>Device Rev</CTableHeaderCell>
-                        <CTableHeaderCell>Protocol</CTableHeaderCell>
-                        <CTableHeaderCell>Serial No</CTableHeaderCell>
-                        <CTableHeaderCell>Circuit</CTableHeaderCell>
+                        {selectedColumns.map((col) => (
+                          <CTableHeaderCell key={col}>{col}</CTableHeaderCell>
+                        ))}
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                      {devices.map((device, index) => (
+                      {filteredDevices.map((device, index) => (
                         <CTableRow key={index}>
-                          <CTableDataCell>{device.AMStag}</CTableDataCell>
-                          <CTableDataCell>{device.Manufacturer}</CTableDataCell>
-                          <CTableDataCell>{device.DeviceType}</CTableDataCell>
-                          <CTableDataCell>{device.DeviceRev}</CTableDataCell>
-                          <CTableDataCell>{device.Protocol}</CTableDataCell>
-                          <CTableDataCell>{device.SerialNo}</CTableDataCell>
-                          <CTableDataCell>{device.Circuit}</CTableDataCell>
+                          {selectedColumns.map((col) => (
+                            <CTableDataCell key={col}>{device[col]}</CTableDataCell>
+                          ))}
                         </CTableRow>
                       ))}
                     </CTableBody>
