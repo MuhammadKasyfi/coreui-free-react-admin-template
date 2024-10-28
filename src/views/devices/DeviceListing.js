@@ -14,33 +14,33 @@ import {
   CTableRow,
   CFormCheck,
 } from '@coreui/react'
-import { AuthContext } from './AuthContext'
+import { AuthContext } from './auth/AuthContext'
 
 const DeviceListing = () => {
-  const { token } = useContext(AuthContext) // Access token from AuthContext
-  const [devices, setDevices] = useState([]) // Holds fetched devices
+  const { token } = useContext(AuthContext)
+  const [devices, setDevices] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [area, setArea] = useState('all')
   const [deviceType, setDeviceType] = useState('all')
-  const [selectedColumns, setSelectedColumns] = useState(['AMStag', 'Manufacturer', 'DeviceType']) // Default columns
+  const [selectedColumns, setSelectedColumns] = useState(['AMStag', 'Manufacturer', 'DeviceType'])
 
-  // Column options for dynamic display
   const columnOptions = [
-    { label: 'AMStag', value: 'AMStag' },
-    { label: 'Manufacturer', value: 'Manufacturer' },
-    { label: 'Device Type', value: 'DeviceType' },
+    { label: 'Asset Tag', value: 'Asset.Tag' },
+    { label: 'Manufacturer', value: 'Asset.Manufacturer' },
+    { label: 'Model Number', value: 'Asset.ModelNumber' },
     { label: 'Device Rev', value: 'DeviceRev' },
-    { label: 'Protocol', value: 'Protocol' },
-    { label: 'Serial No', value: 'SerialNo' },
-    { label: 'Circuit', value: 'Circuit' },
+    { label: 'Location Path', value: 'LocationPath' },
+    { label: 'Physical Path', value: 'PhysicalPath' },
+    { label: 'Serial No', value: 'Asset.SerialNumber' },
+    { label: 'Criticality', value: 'Criticality' },
   ]
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`API_ENDPOINT_HERE`, {
+        const response = await fetch(`https://localhost:8002/api/v2`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,7 +58,7 @@ const DeviceListing = () => {
     }
 
     fetchDevices()
-  }, [token, area, deviceType]) // Re-fetch data on area or deviceType changes
+  }, [token, area, deviceType])
 
   const filteredDevices = devices.filter((device) => {
     return (
@@ -88,8 +88,8 @@ const DeviceListing = () => {
                 <h5>Area</h5>
                 <CFormSelect value={area} onChange={(e) => setArea(e.target.value)}>
                   <option value="all">All</option>
-                  <option value="KNTC">KNTC</option>
-                  <option value="KNPGB">KNPGB</option>
+                  <option value="DeltaV">DeltaV</option>
+                  <option value="HartMultiplexer">Hart Multiplexer</option>
                 </CFormSelect>
               </CCol>
 
@@ -98,11 +98,11 @@ const DeviceListing = () => {
                 <h5>Device Type</h5>
                 <CFormSelect value={deviceType} onChange={(e) => setDeviceType(e.target.value)}>
                   <option value="all">All</option>
-                  <option value="Fieldbus">Fieldbus</option>
-                  <option value="Hart-DCS">Hart-DCS</option>
-                  <option value="Hart-FGS">Hart-FGS</option>
-                  <option value="Positioner">Positioner</option>
-                  <option value="Wireless">Wireless</option>
+                  <option value="PT">PT</option>
+                  <option value="QZT">QZT</option>
+                  <option value="LCV">LCV</option>
+                  <option value="TT">TT</option>
+                  {/* <option value="Wireless">Wireless</option> */}
                 </CFormSelect>
               </CCol>
 

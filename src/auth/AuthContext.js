@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
       const newToken = response.data.access_token
       console.log('Token: ', newToken)
 
-      setToken(newToken) // Set the token in state
+      setToken(newToken)
       return newToken
     } catch (error) {
       // eslint-disable-next-line prettier/prettier
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    getOAuthToken() // Fetch token on component mount
+    getOAuthToken()
   }, [])
 
   return (
