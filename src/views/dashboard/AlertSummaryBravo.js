@@ -51,19 +51,12 @@ const AlertSummaryBravo = () => {
       'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
     const identifier =
       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-    const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000']
+    const hartURL =
+      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART'
+    // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000']
 
     //TODO while loop 
     try {
-
-      // const responsetest = await axios.get(`${opticsURL}/`, { 
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //     Accept: 'application/json',
-      //   },
-      // })
-      // console.log('Get all data: ', responsetest.data)
-
       const response = await axios.get(`${opticsURL}/_healthindex`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,8 +72,18 @@ const AlertSummaryBravo = () => {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
+        
       })
       console.log('Get all data: ', response2.data)
+
+      // Fetch devices in the HART directory
+      const devicesResponse = await axios.get(`${hartURL}/objectName`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      console.log('Get all Devices: ', devicesResponse.data)
 
       // const allHartData = []
       // for (const subfolder of subfolders) {

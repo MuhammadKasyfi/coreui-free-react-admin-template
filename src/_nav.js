@@ -38,8 +38,8 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Alert Summary Charlie',
-        to: '/dashboard/AlertSummaryCharlie',
+        name: 'Try Page',
+        to: '/dashboard/TryPage',
       },
       {
         component: CNavItem,

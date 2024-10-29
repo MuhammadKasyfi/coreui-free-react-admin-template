@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import 'core-js'
 
 import App from './App'
-import { AuthProvider } from './auth/AuthContext'
+// import { AuthProvider } from './auth/AuthContext'
 import store from './store'
 
 // ReactDOM.render(
@@ -23,8 +23,8 @@ import store from './store'
 
 const root = createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <AuthProvider>
+    {/* <AuthProvider> */}
       <App />
-    </AuthProvider>
+    {/* </AuthProvider> */}
   </Provider>,
 )

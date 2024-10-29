@@ -14,7 +14,7 @@ import {
   CTableRow,
   CFormCheck,
 } from '@coreui/react'
-import { AuthContext } from '../../auth/AuthContext'
+// import { AuthContext } from '../../auth/AuthContext'
 
 // Manufacturer: Fish Controls (Asset.Manufacturer property name) 
 // Protocol: HART
@@ -24,7 +24,7 @@ import { AuthContext } from '../../auth/AuthContext'
 // Criticality: C1 (retrieve using ../LCV-2011.criticality)
 
 const DeviceListing = () => {
-  const { token } = useContext(AuthContext)
+  // const { token } = useContext(AuthContext)
   const [devices, setDevices] = useState([])
 //   const [loading, setLoading] = useState(true)
 //   const [error, setError] = useState(null)
