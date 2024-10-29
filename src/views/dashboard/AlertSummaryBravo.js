@@ -52,7 +52,18 @@ const AlertSummaryBravo = () => {
     const identifier =
       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
     const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000']
+
+    //TODO while loop 
     try {
+
+      // const responsetest = await axios.get(`${opticsURL}/`, { 
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //     Accept: 'application/json',
+      //   },
+      // })
+      // console.log('Get all data: ', responsetest.data)
+
       const response = await axios.get(`${opticsURL}/_healthindex`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -71,17 +82,17 @@ const AlertSummaryBravo = () => {
       })
       console.log('Get all data: ', response2.data)
 
-      const allHartData = []
-      for (const subfolder of subfolders) {
-        const folderResponse = await axios.get(`${opticsURL}/${subfolder}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
-        })
-        console.log(`Data for ${subfolder}: `, folderResponse.data)
-        allHartData.push(folderResponse.data.data || []) // Collect data from each folder
-      }
+      // const allHartData = []
+      // for (const subfolder of subfolders) {
+      //   const folderResponse = await axios.get(`${opticsURL}/${subfolder}`, {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       Accept: 'application/json',
+      //     },
+      //   })
+      //   console.log(`Data for ${subfolder}: `, folderResponse.data)
+      //   allHartData.push(folderResponse.data.data || []) // Collect data from each folder
+      // }
 
       // Manufacturer: Fish Controls (Asset.Manufacturer property name)
       // Protocol: HART
