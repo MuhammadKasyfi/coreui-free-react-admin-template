@@ -24,7 +24,7 @@ import store from './store'
 const root = createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     {/* <AuthProvider> */}
-      <App />
+    <App />
     {/* </AuthProvider> */}
   </Provider>,
 )

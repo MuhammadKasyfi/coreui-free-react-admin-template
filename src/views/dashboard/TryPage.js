@@ -13,7 +13,7 @@ import {
   CTableCell,
 } from '@coreui/react'
 
-const App = () => {
+const TryPage = () => {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [currentPath, setCurrentPath] = useState('')
@@ -163,4 +163,4 @@ const App = () => {
   )
 }
 
-export default App
+export default TryPage
