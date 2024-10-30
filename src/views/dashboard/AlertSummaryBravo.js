@@ -57,7 +57,7 @@ const AlertSummaryBravo = () => {
 
     //TODO while loop 
     try {
-      const response = await axios.get(`${opticsURL}/_healthindex`, {
+      const response = await axios.get(`https://localhost:8002/api/v2/read?identifier=/Enterprise/Site/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_health`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
