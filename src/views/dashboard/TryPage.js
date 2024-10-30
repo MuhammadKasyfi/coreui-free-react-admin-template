@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { CAlert, CCard, CCardHeader, CCardBody, CButton } from '@coreui/react'
+import {
+  CAlert,
+  CCard,
+  CCardHeader,
+  CCardBody,
+  CButton,
+  CTable,
+  CTableBody,
+  CTableHeaderCell,
+  CTableRow,
+  CTableCell,
+} from '@coreui/react'
 
 const App = () => {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [currentPath, setCurrentPath] = useState('')
   const [params, setParams] = useState([])
+  const [devices, setDevices] = useState([]) // Store device list
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -35,12 +47,27 @@ const App = () => {
   }
 
   const api = 'https://localhost:8002/api/v2'
-  const initialPath =
-    'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set/HART Multiplexer/HART'
+  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set/HART'
 
   useEffect(() => {
-    setCurrentPath(initialPath)
-  }, [initialPath])
+    const fetchDevices = async () => {
+      try {
+        const token = await getOAuthToken()
+        const response = await axios.get(`${api}/read?identifier=${initialPath}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        // Assuming the response contains a list of devices under HART
+        setDevices(response.data)
+      } catch (err) {
+        setError(err)
+      }
+    }
+
+    fetchDevices()
+  }, [api, initialPath])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,8 +98,9 @@ const App = () => {
     }
   }, [currentPath, params])
 
-  const handleFolderClick = (subfolder) => {
-    setCurrentPath((prevPath) => `${prevPath}/${subfolder}`)
+  const handleDeviceClick = (device) => {
+    // Set the current path to the selected device's path
+    setCurrentPath(`${initialPath}/${device}`)
   }
 
   const handleParamChange = (newParams) => {
@@ -82,18 +110,48 @@ const App = () => {
   return (
     <div>
       {error && <CAlert color="danger">Error: {error.message}</CAlert>}
+
+      <CCard>
+        <CCardHeader>Devices</CCardHeader>
+        <CCardBody>
+          <CTable>
+            <CTableBody>
+              {devices.map((device, index) => (
+                <CTableRow key={index}>
+                  <CTableCell>
+                    <CButton onClick={() => handleDeviceClick(device)}>{device}</CButton>
+                  </CTableCell>
+                </CTableRow>
+              ))}
+            </CTableBody>
+          </CTable>
+        </CCardBody>
+      </CCard>
+
       {data && (
         <CCard>
           <CCardHeader>Data for {currentPath}</CCardHeader>
           <CCardBody>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            {Array.isArray(data) ? (
+              <CTable>
+                <CTableBody>
+                  {data.map((item, index) => (
+                    <CTableRow key={index}>
+                      {Object.values(item).map((value, idx) => (
+                        <CTableCell key={idx}>{value}</CTableCell>
+                      ))}
+                    </CTableRow>
+                  ))}
+                </CTableBody>
+              </CTable>
+            ) : (
+              <pre>{JSON.stringify(data, null, 2)}</pre>
+            )}
           </CCardBody>
         </CCard>
       )}
+
       <div style={{ marginTop: '20px' }}>
-        <CButton color="primary" onClick={() => handleFolderClick('_healthindex')}>
-          View Health Index
-        </CButton>
         <CButton
           color="secondary"
           onClick={() => handleParamChange(['Asset.Tag', 'Asset.Manufacturer'])}
