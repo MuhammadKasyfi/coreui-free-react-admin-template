@@ -10,15 +10,15 @@ import {
   CTableBody,
   CTableHeaderCell,
   CTableRow,
-  CTableCell,
+  CTableDataCell,
 } from '@coreui/react'
 
-const App = () => {
-  const [data, setData] = useState(null)
-  const [error, setError] = useState(null)
+const TryPage = () => {
+//   const [data, setData] = useState(null)
+//   const [error, setError] = useState(null)
   const [currentPath, setCurrentPath] = useState('')
-  const [params, setParams] = useState([])
-  const [devices, setDevices] = useState([]) // Store device list
+//   const [params, setParams] = useState([])
+//   const [devices, setDevices] = useState([]) // Store device list
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -59,8 +59,15 @@ const App = () => {
           },
         })
 
+        if (Array.isArray(response.data)) { 
+            setDevices(response.data)
+        }
+        else{
+            console.error('Expected an array but got: ', response.data)
+            setDevices([])
+        }
         // Assuming the response contains a list of devices under HART
-        setDevices(response.data)
+       // setDevices(response.data.devices)
       } catch (err) {
         setError(err)
       }
@@ -77,6 +84,8 @@ const App = () => {
         if (!token) {
           throw new Error('Unable to retrieve token')
         }
+
+        console.log('trying to access: ', currentPath)
 
         const response = await axios.get(
           `${api}/read?identifier=${currentPath}&params=${params.join(',')}`,
@@ -116,11 +125,11 @@ const App = () => {
         <CCardBody>
           <CTable>
             <CTableBody>
-              {devices.map((device, index) => (
+              {Array.isArray(devices) && devices.map((device, index) => (
                 <CTableRow key={index}>
-                  <CTableCell>
+                  <CTableDataCell>
                     <CButton onClick={() => handleDeviceClick(device)}>{device}</CButton>
-                  </CTableCell>
+                  </CTableDataCell>
                 </CTableRow>
               ))}
             </CTableBody>
@@ -138,7 +147,7 @@ const App = () => {
                   {data.map((item, index) => (
                     <CTableRow key={index}>
                       {Object.values(item).map((value, idx) => (
-                        <CTableCell key={idx}>{value}</CTableCell>
+                        <CTableDataCell key={idx}>{value}</CTableDataCell>
                       ))}
                     </CTableRow>
                   ))}
@@ -163,4 +172,4 @@ const App = () => {
   )
 }
 
-export default App
+export default TryPage
