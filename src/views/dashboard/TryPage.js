@@ -22,6 +22,15 @@ const DeviceListingPage = () => {
     HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
   }
 
+  const params = [
+    'Asset.Tag',
+    'Asset.Manufacturer',
+    'Criticality',
+    'Location.Path',
+    'Asset.ModelNumber',
+    'Asset.SerialNumber',
+  ]
+
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
     const credentials = {
@@ -48,43 +57,12 @@ const DeviceListingPage = () => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
-        const params = [
-          'Asset.Tag',
-          'Asset.Manufacturer',
-          'Criticality',
-          'Location.Path',
-          'Asset.ModelNumber',
-          'Asset.SerialNumber',
-        ]
         const allDevices = []
 
-        // Fetch data for DeltaV asset tags
         for (const tag of assetTags.DeltaV) {
-          const response = await axios.get(
-            `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}&params=${params.join(',')}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
-          if (Array.isArray(response.data)) {
-            allDevices.push(...response.data)
-          }
-        }
-
-        // Fetch data for HART Multiplexer asset tags
-        for (const tag of assetTags.HART) {
-          const response = await axios.get(
-            `${api}/read?identifier=${initialPath}/HART Multiplexer/HART/${tag}&params=${params.join(',')}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          )
-          if (Array.isArray(response.data)) {
-            allDevices.push(...response.data)
+          const deviceData = await fetchDeviceData(tag, token)
+          if (deviceData) {
+            allDevices.push(deviceData)
           }
         }
 
@@ -95,7 +73,24 @@ const DeviceListingPage = () => {
     }
 
     fetchDevices()
-  }, [api, initialPath])
+  }, [])
+
+  const fetchDeviceData = async (tag, token) => {
+    try {
+      const response = await axios.get(
+        `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${params[0]}&identifier=${initialPath}/DeltaV/HART/${tag}.${params[1]}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error fetching device data:', error)
+      return null
+    }
+  }
 
   return (
     <div>
