@@ -43,6 +43,9 @@ const DeviceListingPage = () => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
+        //System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/DeltaV/HART/PT-1100,PT-1107,PT-1200,PT-1300,PT-1404,QZT-1008
+        //System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multitplexer/HART/LCV-2011/TT-1000-1010
+
         const area = ['DeltaV', 'HART Mulitplexer']
         const params = [
           'Asset.Tag',
