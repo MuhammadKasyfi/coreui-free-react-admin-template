@@ -15,7 +15,12 @@ const DeviceListingPage = () => {
   const [devices, setDevices] = useState([])
   const [error, setError] = useState(null)
   const api = 'https://localhost:8002/api/v2'
-  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set/HART'
+  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set'
+
+  const assetTags = {
+    DeltaV: ['PT-1100', 'PT-1107', 'PT-1200', 'PT-1300', 'PT-1404', 'QZT-1008'],
+    HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
+  }
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -43,10 +48,6 @@ const DeviceListingPage = () => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
-        //System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/DeltaV/HART/PT-1100,PT-1107,PT-1200,PT-1300,PT-1404,QZT-1008
-        //System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multitplexer/HART/LCV-2011/TT-1000-1010
-
-        const area = ['DeltaV', 'HART Mulitplexer']
         const params = [
           'Asset.Tag',
           'Asset.Manufacturer',
@@ -55,21 +56,39 @@ const DeviceListingPage = () => {
           'Asset.ModelNumber',
           'Asset.SerialNumber',
         ]
-        const response = await axios.get(
-          `${api}/read?identifier=${initialPath}/${area}&params=${params.join(',')}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        )
+        const allDevices = []
 
-        if (Array.isArray(response.data)) {
-          setDevices(response.data)
-        } else {
-          console.error('Expected an array but got: ', response.data)
-          setDevices([])
+        // Fetch data for DeltaV asset tags
+        for (const tag of assetTags.DeltaV) {
+          const response = await axios.get(
+            `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}&params=${params.join(',')}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
+          if (Array.isArray(response.data)) {
+            allDevices.push(...response.data)
+          }
         }
+
+        // Fetch data for HART Multiplexer asset tags
+        for (const tag of assetTags.HART) {
+          const response = await axios.get(
+            `${api}/read?identifier=${initialPath}/HART Multiplexer/HART/${tag}&params=${params.join(',')}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
+          if (Array.isArray(response.data)) {
+            allDevices.push(...response.data)
+          }
+        }
+
+        setDevices(allDevices)
       } catch (err) {
         setError(err)
       }
