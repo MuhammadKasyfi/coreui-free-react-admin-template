@@ -5,24 +5,20 @@ import {
   CCard,
   CCardHeader,
   CCardBody,
-  CButton,
   CTable,
   CTableBody,
-  CTableHeaderCell,
   CTableRow,
   CTableDataCell,
 } from '@coreui/react'
 
-const TryPage = () => {
-  //   const [data, setData] = useState(null)
-  //   const [error, setError] = useState(null)
-  const [currentPath, setCurrentPath] = useState('')
-  //   const [params, setParams] = useState([])
-  //   const [devices, setDevices] = useState([]) // Store device list
+const DeviceListingPage = () => {
+  const [devices, setDevices] = useState([])
+  const [error, setError] = useState(null)
+  const api = 'https://localhost:8002/api/v2'
+  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set/HART'
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
-
     const credentials = {
       grant_type: 'password',
       authority: 'builtin',
@@ -36,28 +32,34 @@ const TryPage = () => {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
-
-      const token = response.data.access_token
-      console.log('Token: ', token)
-      return token
+      return response.data.access_token
     } catch (error) {
       console.error('Error fetching token: ', error)
       return null
     }
   }
 
-  const api = 'https://localhost:8002/api/v2'
-  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set/HART'
-
   useEffect(() => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
-        const response = await axios.get(`${api}/read?identifier=${initialPath}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const area = ['DeltaV', 'HART Mulitplexer']
+        const params = [
+          'Asset.Tag',
+          'Asset.Manufacturer',
+          'Criticality',
+          'Location.Path',
+          'Asset.ModelNumber',
+          'Asset.SerialNumber',
+        ]
+        const response = await axios.get(
+          `${api}/read?identifier=${initialPath}/${area}&params=${params.join(',')}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        })
+        )
 
         if (Array.isArray(response.data)) {
           setDevices(response.data)
@@ -65,8 +67,6 @@ const TryPage = () => {
           console.error('Expected an array but got: ', response.data)
           setDevices([])
         }
-        // Assuming the response contains a list of devices under HART
-        // setDevices(response.data.devices)
       } catch (err) {
         setError(err)
       }
@@ -75,101 +75,41 @@ const TryPage = () => {
     fetchDevices()
   }, [api, initialPath])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getOAuthToken() // Get the token
-
-        if (!token) {
-          throw new Error('Unable to retrieve token')
-        }
-
-        console.log('trying to access: ', currentPath)
-
-        const response = await axios.get(
-          `${api}/read?identifier=${currentPath}&params=${params.join(',')}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Include the token in the request headers
-            },
-          },
-        )
-
-        setData(response.data)
-      } catch (err) {
-        setError(err)
-      }
-    }
-
-    if (currentPath) {
-      fetchData()
-    }
-  }, [currentPath, params])
-
-  const handleDeviceClick = (device) => {
-    // Set the current path to the selected device's path
-    setCurrentPath(`${initialPath}/${device}`)
-  }
-
-  const handleParamChange = (newParams) => {
-    setParams(newParams)
-  }
-
   return (
     <div>
       {error && <CAlert color="danger">Error: {error.message}</CAlert>}
 
       <CCard>
-        <CCardHeader>Devices</CCardHeader>
+        <CCardHeader>Device Listing</CCardHeader>
         <CCardBody>
           <CTable>
+            <thead>
+              <CTableRow>
+                <th>Tag</th>
+                <th>Manufacturer</th>
+                <th>Model Number</th>
+                <th>Serial Number</th>
+                <th>Criticality</th>
+                <th>Location Path</th>
+              </CTableRow>
+            </thead>
             <CTableBody>
-              {Array.isArray(devices) &&
-                devices.map((device, index) => (
-                  <CTableRow key={index}>
-                    <CTableDataCell>
-                      <CButton onClick={() => handleDeviceClick(device)}>{device}</CButton>
-                    </CTableDataCell>
-                  </CTableRow>
-                ))}
+              {devices.map((device, index) => (
+                <CTableRow key={index}>
+                  <CTableDataCell>{device['Asset.Tag']}</CTableDataCell>
+                  <CTableDataCell>{device['Asset.Manufacturer']}</CTableDataCell>
+                  <CTableDataCell>{device['Asset.ModelNumber']}</CTableDataCell>
+                  <CTableDataCell>{device['Asset.SerialNumber']}</CTableDataCell>
+                  <CTableDataCell>{device['Criticality']}</CTableDataCell>
+                  <CTableDataCell>{device['Location.Path']}</CTableDataCell>
+                </CTableRow>
+              ))}
             </CTableBody>
           </CTable>
         </CCardBody>
       </CCard>
-
-      {data && (
-        <CCard>
-          <CCardHeader>Data for {currentPath}</CCardHeader>
-          <CCardBody>
-            {Array.isArray(data) ? (
-              <CTable>
-                <CTableBody>
-                  {data.map((item, index) => (
-                    <CTableRow key={index}>
-                      {Object.values(item).map((value, idx) => (
-                        <CTableDataCell key={idx}>{value}</CTableDataCell>
-                      ))}
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            ) : (
-              <pre>{JSON.stringify(data, null, 2)}</pre>
-            )}
-          </CCardBody>
-        </CCard>
-      )}
-
-      <div style={{ marginTop: '20px' }}>
-        <CButton
-          color="secondary"
-          onClick={() => handleParamChange(['Asset.Tag', 'Asset.Manufacturer'])}
-        >
-          Select Some Params
-        </CButton>
-      </div>
     </div>
   )
 }
 
-export default TryPage
+export default DeviceListingPage
