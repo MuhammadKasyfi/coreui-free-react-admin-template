@@ -75,13 +75,18 @@ const DeviceListingPage = () => {
     fetchDevices()
   }, [])
 
+  console.log(devices);
+
   const fetchDeviceData = async (tag, token) => {
     try {
       const response = await axios.get(
-        `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${params[0]}&identifier=${initialPath}/DeltaV/HART/${tag}.${params[1]}`,
+        `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.Asset.Tag`,
+        //&identifier=${initialPath}/DeltaV/HART/${tag}.Asset.Manufacturer
+        //const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
           },
         },
       )
@@ -111,17 +116,23 @@ const DeviceListingPage = () => {
               </CTableRow>
             </thead>
             <CTableBody>
-              {devices.map((device, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell>{device['Asset.Tag']}</CTableDataCell>
-                  <CTableDataCell>{device['Asset.Manufacturer']}</CTableDataCell>
-                  <CTableDataCell>{device['Asset.ModelNumber']}</CTableDataCell>
-                  <CTableDataCell>{device['Asset.SerialNumber']}</CTableDataCell>
-                  <CTableDataCell>{device['Criticality']}</CTableDataCell>
-                  <CTableDataCell>{device['Location.Path']}</CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
+  {devices.length > 0 ? (
+    devices.map((device, index) => (
+      <CTableRow key={index}>
+        <CTableDataCell>{device['Asset.Tag']}</CTableDataCell>
+        <CTableDataCell>{device['Asset.Manufacturer']}</CTableDataCell>
+        <CTableDataCell>{device['Asset.ModelNumber']}</CTableDataCell>
+        <CTableDataCell>{device['Asset.SerialNumber']}</CTableDataCell>
+        <CTableDataCell>{device['Criticality']}</CTableDataCell>
+        <CTableDataCell>{device['Location.Path']}</CTableDataCell>
+      </CTableRow>
+    ))
+  ) : (
+    <CTableRow>
+      <CTableDataCell colSpan="6">No devices found</CTableDataCell>
+    </CTableRow>
+  )}
+</CTableBody>
           </CTable>
         </CCardBody>
       </CCard>
