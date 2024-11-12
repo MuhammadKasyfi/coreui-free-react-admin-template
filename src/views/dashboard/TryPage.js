@@ -287,10 +287,7 @@ const TryPage = () => {
   }, [])
 
   return (
-    <div>
-      {error && <CAlert color="danger">Error: {error.message}</CAlert>}
-
-      <CCard>
+    <CCard>
         <CCardHeader>Device Listing</CCardHeader>
         <CCardBody>
           <CTable>
@@ -325,7 +322,6 @@ const TryPage = () => {
           </CTable>
         </CCardBody>
       </CCard>
-    </div>
   )
 }
 
