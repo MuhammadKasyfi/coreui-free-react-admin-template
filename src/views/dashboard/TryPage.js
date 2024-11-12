@@ -153,6 +153,9 @@ import {
   CTableBody,
   CTableRow,
   CTableDataCell,
+  CTableHeaderCell,
+  CTableHead,
+  CDataTable,
 } from '@coreui/react'
 
 const DeviceListingPage = () => {
@@ -166,16 +169,14 @@ const DeviceListingPage = () => {
     HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
   }
 
-  const fetchDeviceData = async (tag, token) => {
-    const params = [
-      'Asset.Tag',
-      'Asset.Manufacturer',
-      'Asset.ModelNumber',
-      'Asset.SerialNumber',
-      'Criticality',
-      'Location.Path'
-    ];
-  
+  const params = [
+    'Asset.Tag',
+    'Asset.Manufacturer',
+    'Asset.ModelNumber',
+    'Asset.SerialNumber',
+    'Criticality',
+    'Location.Path',
+  ]
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -196,6 +197,39 @@ const DeviceListingPage = () => {
     } catch (error) {
       console.error('Error fetching token: ', error)
       return null
+    }
+  }
+
+  const fetchDeviceData = async (tag, token) => {
+    try {
+      const fetchPromises = params.map((param) => {
+        return axios.get(`${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+      })
+
+      const responses = await Promise.all(fetchPromises)
+
+      // Extract data from responses
+      const data = responses.map((response) => response.data)
+      return data // This will be an array of data for each parameter
+    } catch (error) {
+      console.error('Error fetching device data:', error)
+      return null
+    }
+  }
+
+  const handleDeviceData = (device) => {
+    return {
+      tag: device['Asset.Tag'],
+      manufacturer: device['Asset.Manufacturer'],
+      modelNumber: device['Asset.ModelNumber'],
+      serialNumber: device['Asset.SerialNumber'],
+      criticality: device['Criticality'],
+      locationPath: device['Location.Path'],
     }
   }
 
@@ -221,55 +255,6 @@ const DeviceListingPage = () => {
     fetchDevices()
   }, [])
 
-  console.log(devices)
-
-//  const fetchPromises = params.map(param => {
-//       return axios.get(
-//         `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             Accept: 'application/json',
-//           },
-//         }
-//       );
-//     });
-try{
-  const fetchPromises = params.map(param => {
-    return axios.get(
-      `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      }
-    );
-  });
-
-  const responses = await Promise.all(fetchPromises);
-
-    // Extract data from responses
-    const data = responses.map(response => response.data);
-    return data; // This will be an array of data for each parameter
-  } catch (error) {
-    console.error('Error fetching device data:', error);
-    return null;
-  }
-}
-
-
-  const handleDeviceData = (device) => {
-    return {
-      tag: device['Asset.Tag'],
-      manufacturer: device['Asset.Manufacturer'],
-      modelNumber: device['Asset.ModelNumber'],
-      serialNumber: device['Asset.SerialNumber'],
-      criticality: device['Criticality'],
-      locationPath: device['Location.Path'],
-    }
-  }
-
   return (
     <div>
       {error && <CAlert color="danger">Error: {error.message}</CAlert>}
@@ -278,34 +263,46 @@ try{
         <CCardHeader>Device Listing</CCardHeader>
         <CCardBody>
           <CTable>
-            <thead>
+            <CTableHead>
               <CTableRow>
-                <th>Tag</th>
-                <th>Manufacturer</th>
-                <th>Model Number</th>
-                <th>Serial Number</th>
-                <th>Criticality</th>
-                <th>Location Path</th>
+                <CTableHeaderCell>Tag</CTableHeaderCell>
+                <CTableHeaderCell>Manufacturer</CTableHeaderCell>
+                <CTableHeaderCell>Model Number</CTableHeaderCell>
+                <CTableHeaderCell>Serial Number</CTableHeaderCell>
+                <CTableHeaderCell>Criticality</CTableHeaderCell>
+                <CTableHeaderCell>Location Path</CTableHeaderCell>
               </CTableRow>
-            </thead>
-            <CTableBody>
-              {devices.length > 0 ? (
-                devices.map((device, index) => (
-                  <CTableRow key={index}>
-                    <CTableDataCell>{handleDeviceData(device).tag}</CTableDataCell>
-                    <CTableDataCell>{handleDeviceData(device).manufacturer}</CTableDataCell>
-                    <CTableDataCell>{handleDeviceData(device).modelNumber}</CTableDataCell>
-                    <CTableDataCell>{handleDeviceData(device).serialNumber}</CTableDataCell>
-                    <CTableDataCell>{handleDeviceData(device).criticality}</CTableDataCell>
-                    <CTableDataCell>{handleDeviceData(device).locationPath}</CTableDataCell>
+            </CTableHead>
+            <CTable>
+              <CTableBody>
+                {devices.length > 0 ? (
+                  <CDataTable
+                    items={devices}
+                    fields={[
+                      { key: 'tag', label: 'Tag' },
+                      { key: 'manufacturer', label: 'Manufacturer' },
+                      { key: 'modelNumber', label: 'Model Number' },
+                      { key: 'serialNumber', label: 'Serial Number' },
+                      { key: 'criticality', label: 'Criticality' },
+                      { key: 'locationPath', label: 'Location Path' },
+                    ]}
+                    columnFilter
+                    tableFilter
+                    footer
+                    hover
+                    sorter
+                    striped
+                    itemsPerPage={10}
+                    itemsPerPageSelect
+                    pagination
+                  />
+                ) : (
+                  <CTableRow>
+                    <CTableDataCell colSpan="6">No devices found</CTableDataCell>
                   </CTableRow>
-                ))
-              ) : (
-                <CTableRow>
-                  <CTableDataCell colSpan="6">No devices found</CTableDataCell>
-                </CTableRow>
-              )}
-            </CTableBody>
+                )}
+              </CTableBody>
+            </CTable>
           </CTable>
         </CCardBody>
       </CCard>
