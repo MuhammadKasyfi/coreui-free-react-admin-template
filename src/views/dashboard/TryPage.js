@@ -57,14 +57,14 @@ const DeviceListingPage = () => {
 
   const fetchDeviceData = async (tag, token) => {
     try {
-      const fetchPromises = params.map((param) => {
-        return axios.get(`${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`, {
+      const fetchPromises = params.map((param) =>
+        axios.get(`${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
-        })
-      })
+        }),
+      )
 
       const responses = await Promise.all(fetchPromises)
       const data = responses.map((response) => response.data)
@@ -86,6 +86,7 @@ const DeviceListingPage = () => {
     }
   }
 
+  //make function run every time page loads
   useEffect(() => {
     const fetchDevices = async () => {
       try {
@@ -99,12 +100,7 @@ const DeviceListingPage = () => {
         for (const tag of assetTags.DeltaV) {
           const deviceData = await fetchDeviceData(tag, token)
           if (deviceData) {
-            // Map each device's data to the correct format
-            const formattedDeviceData = deviceData.reduce((acc, paramData) => {
-              const deviceInfo = handleDeviceData(paramData)
-              acc.push(deviceInfo)
-              return acc
-            }, [])
+            const formattedDeviceData = deviceData.map((paramData) => handleDeviceData(paramData))
             allDevices.push(...formattedDeviceData)
           }
         }
