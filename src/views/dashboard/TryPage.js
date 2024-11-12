@@ -158,5 +158,3 @@ const DeviceListingPage = () => {
 }
 
 export default DeviceListingPage
-
-//error: Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.
