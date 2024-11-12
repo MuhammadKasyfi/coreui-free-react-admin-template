@@ -166,14 +166,16 @@ const DeviceListingPage = () => {
     HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
   }
 
-  const params = [
-    'Asset.Tag',
-    'Asset.Manufacturer',
-    'Criticality',
-    'Location.Path',
-    'Asset.ModelNumber',
-    'Asset.SerialNumber',
-  ]
+  const fetchDeviceData = async (tag, token) => {
+    const params = [
+      'Asset.Tag',
+      'Asset.Manufacturer',
+      'Asset.ModelNumber',
+      'Asset.SerialNumber',
+      'Criticality',
+      'Location.Path'
+    ];
+  
 
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
@@ -221,23 +223,41 @@ const DeviceListingPage = () => {
 
   console.log(devices)
 
-  const fetchDeviceData = async (tag, token) => {
-    try {
-      const response = await axios.get(
-        `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.Asset.Tag`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-          },
+//  const fetchPromises = params.map(param => {
+//       return axios.get(
+//         `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             Accept: 'application/json',
+//           },
+//         }
+//       );
+//     });
+try{
+  const fetchPromises = params.map(param => {
+    return axios.get(
+      `${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
         },
-      )
-      return response.data
-    } catch (error) {
-      console.error('Error fetching device data:', error)
-      return null
-    }
+      }
+    );
+  });
+
+  const responses = await Promise.all(fetchPromises);
+
+    // Extract data from responses
+    const data = responses.map(response => response.data);
+    return data; // This will be an array of data for each parameter
+  } catch (error) {
+    console.error('Error fetching device data:', error);
+    return null;
   }
+}
+
 
   const handleDeviceData = (device) => {
     return {
