@@ -1,110 +1,160 @@
 import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 import {
+  CAlert,
   CCard,
-  CCardBody,
   CCardHeader,
+  CCardBody,
   CTable,
   CTableBody,
-  CTableHead,
-  CTableHeaderCell,
   CTableRow,
   CTableDataCell,
+  CTableHeaderCell,
+  CTableHead,
 } from '@coreui/react'
 
-const API_URL = 'https://localhost:8002/api'
-const USERNAME = 'OpticsWEBAPIL4'
-const PASSWORD = 'EmersonProcess#1'
-const GRANT_TYPE = 'password'
-const AUTHORITY = 'builtin'
-const PARENT_ID = ['4766cef9-39a7-4e2a-886d-b6efb0262636_EPM Subang_Demo Set_HART Multiplexer_HART'] // Specify the parentId here or dynamically fetch it
+const DeviceListingPage = () => {
+  const [devices, setDevices] = useState([])
+  const [error, setError] = useState(null)
+  const api = 'https://localhost:8002/api/v2'
+  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set'
 
-const TryPage = () => {
-  const [data, setData] = useState([])
-  const [token, setToken] = useState('')
+  const assetTags = {
+    DeltaV: ['PT-1100', 'PT-1107', 'PT-1200', 'PT-1300', 'PT-1404', 'QZT-1008'],
+    HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
+  }
 
-  useEffect(() => {
-    // Step 1: Authenticate and retrieve the token
-    const authenticate = async () => {
-      try {
-        const response = await fetch(`${API_URL}/oauth2/token`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: USERNAME,
-            password: PASSWORD,
-            grant_type: GRANT_TYPE,
-            authority: AUTHORITY,
-          }),
-        })
+  const params = [
+    'Asset.Tag',
+    'Asset.Manufacturer',
+    'Asset.ModelNumber',
+    'Asset.SerialNumber',
+    'Criticality',
+    'Location.Path',
+  ]
 
-        const result = await response.json()
-        if (result.access_token) {
-          setToken(result.access_token)
-          fetchData(result.access_token, PARENT_ID)
-        } else {
-          console.error('Authentication failed')
-        }
-      } catch (error) {
-        console.error('Error during authentication', error)
-      }
+  const getOAuthToken = async () => {
+    const tokenUrl = 'https://localhost:8002/api/oauth2/token'
+    const credentials = {
+      grant_type: 'password',
+      authority: 'builtin',
+      username: 'OpticsWEBAPIL4',
+      password: 'EmersonProcess#1',
     }
 
-    authenticate()
-  }, [])
-
-  // Step 2: Fetch child data for a given parentId using the token
-  const fetchData = async (authToken, parentId) => {
     try {
-      const response = await fetch(`${API_URL}/assets/${parentId}/children`, {
-        method: 'GET',
+      const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
-
-      const result = await response.json()
-      if (result && result.children) {
-        setData(result.children)
-      } else {
-        console.error('No child data found for the specified parent')
-      }
+      return response.data.access_token
     } catch (error) {
-      console.error('Error fetching data', error)
+      console.error('Error fetching token: ', error)
+      return null
     }
   }
 
+  const fetchDeviceData = async (tag, token) => {
+    try {
+      const fetchPromises = params.map((param) =>
+        axios.get(`${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        }),
+      )
+
+      const responses = await Promise.all(fetchPromises)
+      const data = responses.map((response) => response.data)
+      return data // This will be an array of data for each parameter
+    } catch (error) {
+      console.error('Error fetching device data:', error)
+      return null
+    }
+  }
+
+  const handleDeviceData = (device) => {
+    return {
+      tag: device['Asset.Tag'],
+      manufacturer: device['Asset.Manufacturer'],
+      modelNumber: device['Asset.ModelNumber'],
+      serialNumber: device['Asset.SerialNumber'],
+      criticality: device['Criticality'],
+      locationPath: device['Location.Path'],
+    }
+  }
+
+  //make function run every time page loads
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        const token = await getOAuthToken()
+        if (!token) {
+          throw new Error('Failed to retrieve OAuth token')
+        }
+
+        const allDevices = []
+
+        for (const tag of assetTags.DeltaV) {
+          const deviceData = await fetchDeviceData(tag, token)
+          if (deviceData) {
+            const formattedDeviceData = deviceData.map((paramData) => handleDeviceData(paramData))
+            allDevices.push(...formattedDeviceData)
+          }
+        }
+
+        setDevices(allDevices)
+      } catch (err) {
+        setError(err)
+      }
+    }
+
+    fetchDevices()
+  }, [])
+
   return (
-    <CCard>
-      <CCardHeader>Device Listing</CCardHeader>
-      <CCardBody>
-        <CTable striped hover responsive>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell>Tag</CTableHeaderCell>
-              <CTableHeaderCell>Manufacturer</CTableHeaderCell>
-              <CTableHeaderCell>Model Number</CTableHeaderCell>
-              <CTableHeaderCell>Serial Number</CTableHeaderCell>
-              <CTableHeaderCell>Criticality</CTableHeaderCell>
-              <CTableHeaderCell>Location Path</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {data.map((item, index) => (
-              <CTableRow key={index}>
-                <CTableDataCell>{item['Asset.Tag']}</CTableDataCell>
-                <CTableDataCell>{item['Asset.Manufacturer']}</CTableDataCell>
-                <CTableDataCell>{item['Asset.ModelNumber']}</CTableDataCell>
-                <CTableDataCell>{item['Asset.SerialNumber']}</CTableDataCell>
-                <CTableDataCell>{item['Criticality']}</CTableDataCell>
-                <CTableDataCell>{item['Location.Path']}</CTableDataCell>
+    <div>
+      {error && <CAlert color="danger">Error: {error.message}</CAlert>}
+
+      <CCard>
+        <CCardHeader>Device Listing</CCardHeader>
+        <CCardBody>
+          <CTable>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell>Tag</CTableHeaderCell>
+                <CTableHeaderCell>Manufacturer</CTableHeaderCell>
+                <CTableHeaderCell>Model Number</CTableHeaderCell>
+                <CTableHeaderCell>Serial Number</CTableHeaderCell>
+                <CTableHeaderCell>Criticality</CTableHeaderCell>
+                <CTableHeaderCell>Location Path</CTableHeaderCell>
               </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
-      </CCardBody>
-    </CCard>
+            </CTableHead>
+            <CTableBody>
+              {devices.length > 0 ? (
+                devices.map((device, index) => (
+                  <CTableRow key={index}>
+                    <CTableDataCell>{device.tag}</CTableDataCell>
+                    <CTableDataCell>{device.manufacturer}</CTableDataCell>
+                    <CTableDataCell>{device.modelNumber}</CTableDataCell>
+                    <CTableDataCell>{device.serialNumber}</CTableDataCell>
+                    <CTableDataCell>{device.criticality}</CTableDataCell>
+                    <CTableDataCell>{device.locationPath}</CTableDataCell>
+                  </CTableRow>
+                ))
+              ) : (
+                <CTableRow>
+                  <CTableDataCell colSpan="6">No devices found</CTableDataCell>
+                </CTableRow>
+              )}
+            </CTableBody>
+          </CTable>
+        </CCardBody>
+      </CCard>
+    </div>
   )
 }
 
-export default TryPage
+export default DeviceListingPage
