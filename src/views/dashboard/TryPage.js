@@ -158,3 +158,6 @@ const DeviceListingPage = () => {
 }
 
 export default DeviceListingPage
+
+
+//parentId :4766cef9-39a7-4e2a-886d-b6efb0262636_EPM Subang_Demo Set_HART Multiplexer_HART
