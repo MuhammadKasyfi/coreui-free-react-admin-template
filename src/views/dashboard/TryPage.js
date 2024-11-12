@@ -57,7 +57,7 @@ const DeviceListingPage = () => {
 
   const fetchDeviceData = async (tag, token) => {
     try {
-      const fetchPromises = params.map((param) => {
+      const fetchPromises = params.map(param => {
         return axios.get(`${api}/read?identifier=${initialPath}/DeltaV/HART/${tag}.${param}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -162,5 +162,3 @@ const DeviceListingPage = () => {
 }
 
 export default DeviceListingPage
-
-//error: Warning: Functions are not valid as a React child. This may happen if you return a Component instead of <Component /> from render. Or maybe you meant to call this function rather than return it.
