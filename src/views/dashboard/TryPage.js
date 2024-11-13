@@ -288,40 +288,40 @@ const TryPage = () => {
 
   return (
     <CCard>
-        <CCardHeader>Device Listing</CCardHeader>
-        <CCardBody>
-          <CTable>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>Tag</CTableHeaderCell>
-                <CTableHeaderCell>Manufacturer</CTableHeaderCell>
-                <CTableHeaderCell>Model Number</CTableHeaderCell>
-                <CTableHeaderCell>Serial Number</CTableHeaderCell>
-                <CTableHeaderCell>Criticality</CTableHeaderCell>
-                <CTableHeaderCell>Location Path</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {devices.length > 0 ? (
-                devices.map((device, index) => (
-                  <CTableRow key={index}>
-                    <CTableDataCell>{device.tag}</CTableDataCell>
-                    <CTableDataCell>{device.manufacturer}</CTableDataCell>
-                    <CTableDataCell>{device.modelNumber}</CTableDataCell>
-                    <CTableDataCell>{device.serialNumber}</CTableDataCell>
-                    <CTableDataCell>{device.criticality}</CTableDataCell>
-                    <CTableDataCell>{device.locationPath}</CTableDataCell>
-                  </CTableRow>
-                ))
-              ) : (
-                <CTableRow>
-                  <CTableDataCell colSpan="6">No devices found</CTableDataCell>
+      <CCardHeader>Device Listing</CCardHeader>
+      <CCardBody>
+        <CTable>
+          <CTableHead>
+            <CTableRow>
+              <CTableHeaderCell>Tag</CTableHeaderCell>
+              <CTableHeaderCell>Manufacturer</CTableHeaderCell>
+              <CTableHeaderCell>Model Number</CTableHeaderCell>
+              <CTableHeaderCell>Serial Number</CTableHeaderCell>
+              <CTableHeaderCell>Criticality</CTableHeaderCell>
+              <CTableHeaderCell>Location Path</CTableHeaderCell>
+            </CTableRow>
+          </CTableHead>
+          <CTableBody>
+            {devices.length > 0 ? (
+              devices.map((device, index) => (
+                <CTableRow key={index}>
+                  <CTableDataCell>{device.tag}</CTableDataCell>
+                  <CTableDataCell>{device.manufacturer}</CTableDataCell>
+                  <CTableDataCell>{device.modelNumber}</CTableDataCell>
+                  <CTableDataCell>{device.serialNumber}</CTableDataCell>
+                  <CTableDataCell>{device.criticality}</CTableDataCell>
+                  <CTableDataCell>{device.locationPath}</CTableDataCell>
                 </CTableRow>
-              )}
-            </CTableBody>
-          </CTable>
-        </CCardBody>
-      </CCard>
+              ))
+            ) : (
+              <CTableRow>
+                <CTableDataCell colSpan="6">No devices found</CTableDataCell>
+              </CTableRow>
+            )}
+          </CTableBody>
+        </CTable>
+      </CCardBody>
+    </CCard>
   )
 }
 
