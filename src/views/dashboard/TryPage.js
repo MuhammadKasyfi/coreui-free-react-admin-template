@@ -94,7 +94,7 @@ const TryPage = () => {
   }
 
   // useEffect to fetch data when the component mounts
-  useEffect(() => {
+  uuseEffect(() => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
@@ -106,14 +106,17 @@ const TryPage = () => {
 
         for (const tag of assetTags.DeltaV) {
           const deviceData = await fetchDeviceData(tag, token)
+          console.log('Fetched Device Data:', deviceData) // Debugging
           if (deviceData) {
             const formattedDeviceData = deviceData.map((paramData) => handleDeviceData(paramData))
             allDevices.push(...formattedDeviceData)
           }
         }
 
+        console.log('All Devices:', allDevices) // Debugging
         setDevices(allDevices)
       } catch (err) {
+        console.error(err)
         setError(err)
       }
     }
