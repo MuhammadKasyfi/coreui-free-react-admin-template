@@ -76,14 +76,13 @@ const TryPage = () => {
       })
 
       console.log('API Response:', response.data) // Debugging
-     
-     return response.data.devices || [] // Make sure it's always an array
-     // If the response is an object, you may need to access a specific property.
-   } catch (error) {
-     console.error(`Error fetching data for tag ${tag}:`, error)
-     return null
-   }
- }
+
+      return response.data.devices || [] // Make sure it's always an array
+    } catch (error) {
+      console.error(`Error fetching data for tag ${tag}:`, error)
+      return null
+    }
+  }
 
   const handleDeviceData = (device) => {
     return {
