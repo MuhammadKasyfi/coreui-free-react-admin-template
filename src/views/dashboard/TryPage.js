@@ -75,12 +75,15 @@ const TryPage = () => {
         },
       })
 
-      return response.data
-    } catch (error) {
-      console.error(`Error fetching data for tag ${tag}:`, error)
-      return null
-    }
-  }
+      console.log('API Response:', response.data) // Debugging
+     
+     return response.data.devices || [] // Make sure it's always an array
+     // If the response is an object, you may need to access a specific property.
+   } catch (error) {
+     console.error(`Error fetching data for tag ${tag}:`, error)
+     return null
+   }
+ }
 
   const handleDeviceData = (device) => {
     return {
@@ -89,12 +92,12 @@ const TryPage = () => {
       modelNumber: device['Asset.ModelNumber'],
       serialNumber: device['Asset.SerialNumber'],
       criticality: device['Criticality'],
-      locationPath: device['Location.Path'],
+      locationPath: device['LocationPath'],
     }
   }
 
   // useEffect to fetch data when the component mounts
-  uuseEffect(() => {
+  useEffect(() => {
     const fetchDevices = async () => {
       try {
         const token = await getOAuthToken()
@@ -107,9 +110,11 @@ const TryPage = () => {
         for (const tag of assetTags.DeltaV) {
           const deviceData = await fetchDeviceData(tag, token)
           console.log('Fetched Device Data:', deviceData) // Debugging
-          if (deviceData) {
+          if (Array.isArray(deviceData)) {
             const formattedDeviceData = deviceData.map((paramData) => handleDeviceData(paramData))
             allDevices.push(...formattedDeviceData)
+          } else {
+            console.warn(`deviceData is not an array for tag ${tag}`, deviceData)
           }
         }
 
