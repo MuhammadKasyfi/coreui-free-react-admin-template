@@ -63,7 +63,7 @@ const AlertSummaryBravo = () => {
           Accept: 'application/json',
         },
       })
-      console.log('Get all data: ', response.data)
+      console.log('Get LCV-2011 health data: ', response.data)
       setDemoData(response.data.data || [])
 
       const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
@@ -77,13 +77,61 @@ const AlertSummaryBravo = () => {
       console.log('Get all data: ', response2.data)
 
       // Fetch devices in the HART directory
-      const devicesResponse = await axios.get(`${hartURL}/objectName`, {
+      const devicesResponse = await axios.get(`${hartURL}.objectName`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
       console.log('Get all Devices: ', devicesResponse.data)
+      
+    ////////////////////
+
+    // const getDevicePathsRecursively = async (token, folderPath) => {
+    //     // Fetch the subfolder contents under the specified folderPath (e.g., HART folder)
+    //     const devicesResponse = await axios.get(`${hartURL}`, {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         Accept: 'application/json',
+    //       },
+    //     });
+    
+    //     // Assuming the response contains data about subfolders or objects
+    //     const subfolders = devicesResponse.data.data; // Adjust this based on actual response structure
+    
+    //     let devicePaths = [];
+    
+    //     for (const subfolder of subfolders) {
+    //       const fullPath = `${folderPath}/${subfolder.objectName}`;  // Assuming `name` field holds subfolder names
+    //       if (subfolder.type === 'folder') {
+    //         // If it's a folder, recurse into it
+    //         const nestedDevicePaths = await getDevicePathsRecursively(token, fullPath);
+    //         devicePaths = devicePaths.concat(nestedDevicePaths);
+    //       } else if (subfolder.type === 'device') {
+    //         // If it's a device, add its path to the list
+    //         devicePaths.push(fullPath);
+    //       }
+    //     }
+    
+    //     return devicePaths;
+    // };
+    
+    // // Usage
+    // const folderPath = 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART';
+    // const devicePaths = await getDevicePathsRecursively(token, folderPath);
+    // console.log('Get all Devices: ', devicePaths);
+
+    //   // Assuming devicesResponse.data contains an array of objects under the HART folder
+    // if (devicesResponse.data && Array.isArray(devicesResponse.data)) {
+    //   // Extract and display the names of the objects in the HART folder
+    //   const objectNames = devicesResponse.data.map((device) => device.objectName); // Assuming `objectName` is the key holding the names
+    //   console.log('Object names in HART folder: ', objectNames);
+      
+    //   // Optionally, you could display these names in the UI if you're using React
+    //   // setHartObjectNames(objectNames);
+    // } else {
+    //   console.error('Invalid data format in devicesResponse:', devicesResponse.data);
+    // }
 
       // const allHartData = []
       // for (const subfolder of subfolders) {
