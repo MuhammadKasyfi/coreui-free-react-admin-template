@@ -52,7 +52,7 @@ const AlertSummaryBravo = () => {
     const identifier =
       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
     const hartURL =
-      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART'
+      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
     // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000']
 
     //TODO while loop 
@@ -77,7 +77,7 @@ const AlertSummaryBravo = () => {
       console.log('Get all data: ', response2.data)
 
       // Fetch devices in the HART directory
-      const devicesResponse = await axios.get(`${hartURL}.objectName`, {
+      const devicesResponse = await axios.get(`${hartURL}.LocationPath`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
