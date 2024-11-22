@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import {
-  CAlert,
   CCard,
   CCardHeader,
   CCardBody,
@@ -15,7 +14,7 @@ import {
 
 const TryPage = () => {
   const [devices, setDevices] = useState([])
-  const [error, setError] = useState(null)
+  //const [error, setError] = useState(null)
   const api = 'https://localhost:8002/api/v2'
   const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set'
 
@@ -57,7 +56,6 @@ const TryPage = () => {
 
   const fetchDeviceData = async (tag, token) => {
     try {
-      // Construct the URL with dynamic query parameters
       const queryParams = params
         .map(
           (param) =>
@@ -67,7 +65,6 @@ const TryPage = () => {
 
       const url = `${api}/read?${queryParams}`
 
-      // Fetch the data from the constructed URL
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -76,14 +73,13 @@ const TryPage = () => {
       })
 
       console.log('API Response:', response.data) // Debugging
-     
-     return response.data.devices || [] // Make sure it's always an array
-     // If the response is an object, you may need to access a specific property.
-   } catch (error) {
-     console.error(`Error fetching data for tag ${tag}:`, error)
-     return null
-   }
- }
+
+      return response.data.devices || [] // Make sure it's always an array
+    } catch (error) {
+      console.error(`Error fetching data for tag ${tag}:`, error)
+      return null
+    }
+  }
 
   const handleDeviceData = (device) => {
     return {
@@ -96,7 +92,6 @@ const TryPage = () => {
     }
   }
 
-  // useEffect to fetch data when the component mounts
   useEffect(() => {
     const fetchDevices = async () => {
       try {
