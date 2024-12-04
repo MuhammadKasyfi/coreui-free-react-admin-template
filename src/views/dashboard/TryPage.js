@@ -173,47 +173,34 @@ import {
   CContainer,
   CRow,
   CCol,
-  CForm,
-  CFormLabel,
-  CFormInput,
-  CButton,
   CCard,
-  CCardBody,
   CCardHeader,
-  CCardText,
-  CListGroup,
-  CListGroupItem,
+  CCardBody,
+  CTable,
+  CTableHead,
+  CTableRow,
+  CTableHeaderCell,
+  CTableBody,
+  CTableDataCell,
+  CSpinner,
 } from '@coreui/react'
 
 const TryPage = () => {
-  const [events, setEvents] = useState([])
-  const [eventIndex, setEventIndex] = useState('')
-  const [eventData, setEventData] = useState('')
+  const [collectionData, setCollectionData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchEvents()
+    fetchCollectionData()
   }, [])
 
-  const fetchEvents = async () => {
+  const fetchCollectionData = async () => {
     try {
-      const response = await axios.get('http://localhost:8002/api/v2')
-      setEvents(response.data)
+      const response = await axios.get('http://localhost:8002/api/v2') // Replace with your API endpoint
+      setCollectionData(response.data)
+      setLoading(false)
     } catch (error) {
-      console.error('Error fetching events:', error)
-    }
-  }
-
-  const addEvent = async () => {
-    try {
-      const response = await axios.post('http://localhost:8002/api/v2', {
-        i: Number(eventIndex),
-        e: JSON.parse(eventData),
-      })
-      setEvents([...events, response.data])
-      setEventIndex('')
-      setEventData('')
-    } catch (error) {
-      console.error('Error adding event:', error)
+      console.error('Error fetching collection data:', error)
+      setLoading(false)
     }
   }
 
@@ -221,63 +208,58 @@ const TryPage = () => {
     <CContainer>
       <CRow className="my-4">
         <CCol>
-          <h1>Event Data Store</h1>
-        </CCol>
-      </CRow>
-
-      <CRow className="mb-4">
-        <CCol lg={6}>
-          <CCard>
-            <CCardHeader>Add Event</CCardHeader>
-            <CCardBody>
-              <CForm>
-                <CRow className="mb-3">
-                  <CCol>
-                    <CFormLabel>Event Index</CFormLabel>
-                    <CFormInput
-                      type="number"
-                      placeholder="Event Index"
-                      value={eventIndex}
-                      onChange={(e) => setEventIndex(e.target.value)}
-                    />
-                  </CCol>
-                </CRow>
-                <CRow className="mb-3">
-                  <CCol>
-                    <CFormLabel>Event Data (JSON format)</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      placeholder="Event Data (JSON format)"
-                      value={eventData}
-                      onChange={(e) => setEventData(e.target.value)}
-                    />
-                  </CCol>
-                </CRow>
-                <CButton color="primary" onClick={addEvent}>
-                  Add Event
-                </CButton>
-              </CForm>
-            </CCardBody>
-          </CCard>
+          <h1>Collection Data</h1>
         </CCol>
       </CRow>
 
       <CRow>
         <CCol>
           <CCard>
-            <CCardHeader>Events List</CCardHeader>
+            <CCardHeader>Data List</CCardHeader>
             <CCardBody>
-              {events.length === 0 ? (
-                <CCardText>No events found.</CCardText>
+              {loading ? (
+                <div className="text-center">
+                  <CSpinner color="primary" />
+                </div>
+              ) : collectionData.length === 0 ? (
+                <p>No data available in the collection.</p>
               ) : (
-                <CListGroup>
-                  {events.map((event) => (
-                    <CListGroupItem key={event._id}>
-                      <strong>Index:</strong> {event.i} <br />
-                      <strong>Data:</strong> {JSON.stringify(event.e)}
-                    </CListGroupItem>
-                  ))}
-                </CListGroup>
+                <CTable hover bordered responsive>
+                  <CTableHead>
+                    <CTableRow>
+                      {/* Add your table headers based on collection fields */}
+                      <CTableHeaderCell>#</CTableHeaderCell>
+                      <CTableHeaderCell>ID</CTableHeaderCell>
+                      <CTableHeaderCell>Field 1</CTableHeaderCell>
+                      <CTableHeaderCell>Field 2</CTableHeaderCell>
+                      <CTableHeaderCell>Actions</CTableHeaderCell>
+                    </CTableRow>
+                  </CTableHead>
+                  <CTableBody>
+                    {collectionData.map((item, index) => (
+                      <CTableRow key={item._id}>
+                        <CTableDataCell>{index + 1}</CTableDataCell>
+                        <CTableDataCell>{item._id}</CTableDataCell>
+                        <CTableDataCell>{item.field1}</CTableDataCell>
+                        <CTableDataCell>{item.field2}</CTableDataCell>
+                        <CTableDataCell>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => alert(`Viewing ${item._id}`)}
+                          >
+                            View
+                          </button>{' '}
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => alert(`Deleting ${item._id}`)}
+                          >
+                            Delete
+                          </button>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
+                </CTable>
               )}
             </CCardBody>
           </CCard>
