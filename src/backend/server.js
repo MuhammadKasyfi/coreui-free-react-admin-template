@@ -32,7 +32,7 @@ const eventDataSchema = new mongoose.Schema({
 const EventData = mongoose.model('EventData', eventDataSchema)
 
 // API Endpoints
-app.get('/events', async (req, res) => {
+app.get('/v2', async (req, res) => {
   try {
     const events = await EventData.find()
     res.status(200).json(events)

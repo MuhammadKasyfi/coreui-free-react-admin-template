@@ -185,7 +185,7 @@ import {
   CListGroupItem,
 } from '@coreui/react'
 
-const App = () => {
+const TryPage = () => {
   const [events, setEvents] = useState([])
   const [eventIndex, setEventIndex] = useState('')
   const [eventData, setEventData] = useState('')
@@ -196,7 +196,7 @@ const App = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/events')
+      const response = await axios.get('http://localhost:3000/v2')
       setEvents(response.data)
     } catch (error) {
       console.error('Error fetching events:', error)
@@ -205,7 +205,7 @@ const App = () => {
 
   const addEvent = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/events', {
+      const response = await axios.post('http://localhost:3000/v2', {
         i: Number(eventIndex),
         e: JSON.parse(eventData),
       })
@@ -287,4 +287,4 @@ const App = () => {
   )
 }
 
-export default App
+export default TryPage
