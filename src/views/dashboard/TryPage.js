@@ -196,7 +196,7 @@ const TryPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/v2')
+      const response = await axios.get('http://localhost:8002/api/v2')
       setEvents(response.data)
     } catch (error) {
       console.error('Error fetching events:', error)
@@ -205,7 +205,7 @@ const TryPage = () => {
 
   const addEvent = async () => {
     try {
-      const response = await axios.post('http://localhost:3000/v2', {
+      const response = await axios.post('http://localhost:8002/api/v2', {
         i: Number(eventIndex),
         e: JSON.parse(eventData),
       })
