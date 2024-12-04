@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+/*import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import {
   CCard,
@@ -164,3 +164,127 @@ const TryPage = () => {
 }
 
 export default TryPage
+*/
+
+// Frontend: React.js
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import {
+  CContainer,
+  CRow,
+  CCol,
+  CForm,
+  CFormLabel,
+  CFormInput,
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCardText,
+  CListGroup,
+  CListGroupItem,
+} from '@coreui/react'
+
+const App = () => {
+  const [events, setEvents] = useState([])
+  const [eventIndex, setEventIndex] = useState('')
+  const [eventData, setEventData] = useState('')
+
+  useEffect(() => {
+    fetchEvents()
+  }, [])
+
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/events')
+      setEvents(response.data)
+    } catch (error) {
+      console.error('Error fetching events:', error)
+    }
+  }
+
+  const addEvent = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/events', {
+        i: Number(eventIndex),
+        e: JSON.parse(eventData),
+      })
+      setEvents([...events, response.data])
+      setEventIndex('')
+      setEventData('')
+    } catch (error) {
+      console.error('Error adding event:', error)
+    }
+  }
+
+  return (
+    <CContainer>
+      <CRow className="my-4">
+        <CCol>
+          <h1>Event Data Store</h1>
+        </CCol>
+      </CRow>
+
+      <CRow className="mb-4">
+        <CCol lg={6}>
+          <CCard>
+            <CCardHeader>Add Event</CCardHeader>
+            <CCardBody>
+              <CForm>
+                <CRow className="mb-3">
+                  <CCol>
+                    <CFormLabel>Event Index</CFormLabel>
+                    <CFormInput
+                      type="number"
+                      placeholder="Event Index"
+                      value={eventIndex}
+                      onChange={(e) => setEventIndex(e.target.value)}
+                    />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CCol>
+                    <CFormLabel>Event Data (JSON format)</CFormLabel>
+                    <CFormInput
+                      type="text"
+                      placeholder="Event Data (JSON format)"
+                      value={eventData}
+                      onChange={(e) => setEventData(e.target.value)}
+                    />
+                  </CCol>
+                </CRow>
+                <CButton color="primary" onClick={addEvent}>
+                  Add Event
+                </CButton>
+              </CForm>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      <CRow>
+        <CCol>
+          <CCard>
+            <CCardHeader>Events List</CCardHeader>
+            <CCardBody>
+              {events.length === 0 ? (
+                <CCardText>No events found.</CCardText>
+              ) : (
+                <CListGroup>
+                  {events.map((event) => (
+                    <CListGroupItem key={event._id}>
+                      <strong>Index:</strong> {event.i} <br />
+                      <strong>Data:</strong> {JSON.stringify(event.e)}
+                    </CListGroupItem>
+                  ))}
+                </CListGroup>
+              )}
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+    </CContainer>
+  )
+}
+
+export default App
