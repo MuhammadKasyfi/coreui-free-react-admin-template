@@ -195,7 +195,7 @@ const TryPage = () => {
 
   const fetchCollectionData = async () => {
     try {
-      const response = await axios.get('http://localhost:8002/api/v2') // Replace with your API endpoint
+      const response = await axios.get('http://localhost:8002/api/v2') // Replace API endpoint
       setCollectionData(response.data)
       setLoading(false)
     } catch (error) {
