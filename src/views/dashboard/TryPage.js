@@ -53,11 +53,11 @@
 //       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
 //     // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000'] < -- use list to loop through and save to SQL
 //     // FETCH from CSV -> D.ID = [01, 02, 03, 04] OR JSON
-//     // LOOP 
+//     // LOOP
 
 //     //TODO while loop looping through MYSQL device IDs while (data)
 //     try {
-//       const response = await axios.get(`${opticsURL}/_healthindex`, { // 
+//       const response = await axios.get(`${opticsURL}/_healthindex`, { //
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //           Accept: 'application/json',
@@ -72,7 +72,7 @@
 //           Authorization: `Bearer ${token}`,
 //           Accept: 'application/json',
 //         },
-        
+
 //       })
 //       console.log('Get all data: ', response2.data)
 
@@ -150,56 +150,112 @@
 // export default TryPage
 
 //csv to json
-import React, { useState } from "react";
-import Papa from "papaparse"
+import React, { useState, useEffect } from 'react'
+import Papa from 'papaparse'
+import axios from 'axios'
+import {
+  CTable,
+  CTableHead,
+  CTableBody,
+  CTableRow,
+  CTableHeaderCell,
+  CTableDataCell,
+} from '@coreui/react'
 
-const CSVUploader = () => {
+const TryPage = () => {
   const [data, setData] = useState([])
+  const [demoData, setDemoData] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  //parse cvs and add id
   const handleFileChange = (e) => {
     const file = e.target.files[0]
     if (file) {
-      Papa.parse(file,
-        {
-          header: true, // conv rows into json
-          skipEmptyLines: true,
-          complete: (result) => {
-            //add id to each row
-            const jsonData = result.data.map((row, index) => ({
-              id: `${index}`, //id using index
-              ...row, //inc ori row data
-            }))
-            setData(jsonData)
-          }
-        })
+      Papa.parse(file, {
+        header: true, //convert csv to json
+        skipEmptyLines: true,
+        complete: (result) => {
+          const jsonData = result.data.map((row, index) => ({
+            id: `${index}`, //assign id
+            ...row, // include original row data
+          }))
+          setData(jsonData)
+        },
+      })
     }
   }
+
+  const getDemoData = async (token, assetName) => {
+    const baseUrl = 'https://localhost:8002/api/v2/read'
+    const identifier = `/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/${assetName}`
+    const url = `${baseUrl}?identifier=${identifier}`
+
+    try {
+      const response = await axios.get(`${url}/_healthindex`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      })
+      console.log(`Fetched data for ${assetName}:`, response.data)
+      return response.data.data || []
+    } catch (error) {
+      console.error(`Error fetching data for ${assetName}:`, error.response?.data || error.message)
+      return []
+    }
+  }
+
+  const fetchDemoData = async () => {
+    setLoading(true)
+    const token = await getOAuthToken()
+    if (!token) {
+      console.error('Failed to retrieve OAuth token.')
+      setLoading(false)
+      return
+    }
+
+    const allData = []
+    for (const item of data) {
+      const assetName = item.AssetName
+      if (assetName) {
+        const fetchedData = await getDemoData(token, assetName)
+        allData.push(...fetchedData)
+      }
+    }
+    setDemoData(allData)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    if (data.length > 0) {
+      fetchDemoData()
+    }
+  }, [data])
+
   return (
     <div>
       <h2>CSV Uploader</h2>
-      <input type="file" accept=".csv" onChange={handleFileChange}/>
+      <input type="file" accept=".csv" onChange={handleFileChange} />
 
       <h3>Asset List</h3>
       {data.length > 0 ? (
-        <table border="1" style={{width: "100%", textAlign: "left" }}>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Asset Name</th>
-              <th>Asset Location</th>
-            </tr>
-          </thead>
-          <tbody>
+        <CTable striped bordered hover>
+          <CTableHead>
+            <CTableRow>
+              <CTableHeaderCell>ID</CTableHeaderCell>
+              <CTableHeaderCell>Asset Name</CTableHeaderCell>
+              <CTableHeaderCell>Asset Location</CTableHeaderCell>
+            </CTableRow>
+          </CTableHead>
+          <CTableBody>
             {data.map((item) => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item["AssetName"]}</td>
-                <td>{item["AssetLocation"]}</td>
-              </tr>
+              <CTableRow key={item.id}>
+                <CTableDataCell>{item.id}</CTableDataCell>
+                <CTableDataCell>{item['AssetName']}</CTableDataCell>
+                <CTableDataCell>{item['AssetLocation']}</CTableDataCell>
+              </CTableRow>
             ))}
-          </tbody>
-        </table>
+          </CTableBody>
+        </CTable>
       ) : (
         <p>No data available. Please upload a CSV file</p>
       )}
@@ -207,4 +263,4 @@ const CSVUploader = () => {
   )
 }
 
-export default CSVUploader
+export default TryPage
