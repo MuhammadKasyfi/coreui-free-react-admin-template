@@ -159,13 +159,40 @@ import {
   CTableBody,
   CTableRow,
   CTableHeaderCell,
-  CTableDataCell,
+  CTableDataCell
 } from '@coreui/react'
 
 const TryPage = () => {
   const [data, setData] = useState([])
   const [demoData, setDemoData] = useState([])
   const [loading, setLoading] = useState(false)
+
+  const getOAuthToken = async () => {
+    const tokenUrl = 'https://localhost:8002/api/oauth2/token'
+
+    const credentials = {
+      grant_type: 'password',
+      authority: 'builtin',
+      username: 'OpticsWEBAPIL4',
+      password: 'EmersonProcess#1',
+    }
+
+    try {
+      const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+
+      const token = response.data.access_token
+      console.log('Token: ', token)
+
+      return token
+    } catch (error) {
+      console.error('Error fetchin token: ', error)
+      return null
+    }
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -190,7 +217,7 @@ const TryPage = () => {
     const url = `${baseUrl}?identifier=${identifier}`
 
     try {
-      const response = await axios.get(`${url}/_healthindex`, {
+      const response = await axios.get(`${url}/Analog Input (PV)`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
