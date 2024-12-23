@@ -160,7 +160,6 @@ import {
   CTableRow,
   CTableHeaderCell,
   CTableDataCell,
-  CSpinner,
 } from '@coreui/react'
 
 const TryPage = () => {
@@ -204,8 +203,7 @@ const TryPage = () => {
         complete: (result) => {
           const jsonData = result.data.map((row, index) => ({
             id: `${index}`, //assign id
-            healthIndex: null, // Placeholder for fetched health index
-            ...row, // Include original row data
+            ...row, // include original row data
           }))
           setData(jsonData)
         },
@@ -219,42 +217,41 @@ const TryPage = () => {
     const url = `${baseUrl}?identifier=${identifier}`
 
     try {
-      const response = await axios.get(`${url}/_healthindex`, {
+      const response = await axios.get(`${url}/Analog Input (PV)`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
       console.log(`Fetched data for ${assetName}:`, response.data)
-      return response.data.data || null
+      return response.data.data || []
     } catch (error) {
       console.error(`Error fetching data for ${assetName}:`, error.response?.data || error.message)
-      return null
+      return []
     }
   }
 
   const fetchDemoData = async () => {
     setLoading(true)
-    setError('') // Clear previous errors
     const token = await getOAuthToken()
     if (!token) {
       console.error('Failed to retrieve OAuth token.')
       setLoading(false)
-      setError('Failed to retrieve OAuth token.')
       return
     }
 
-    const updatedData = await Promise.all(
-      data.map(async (item) => {
-        const assetName = item.AssetName
-        if (assetName) {
-          const healthIndex = await getDemoData(token, assetName)
-          return { ...item, healthIndex }
-        }
-        return item
-      }),
-    )
-    setData(updatedData)
+    const allData = []
+    for (const item of data) {
+      const assetName = item.AssetName
+      if (assetName) {
+        const fetchedData = await getDemoData(token, assetName)
+        const healthIndex = fetchedData.length > 0 ? fetchedData[0].value : 'N/A'
+        //allData.push(...fetchedData)
+        return { ...item, HealthIndex: healthIndex }
+      }
+      return item
+    }
+    setDemoData(allData)
     setLoading(false)
   }
 
@@ -268,12 +265,9 @@ const TryPage = () => {
     <div>
       <h2>CSV Uploader</h2>
       <input type="file" accept=".csv" onChange={handleFileChange} />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <h3>Asset List</h3>
-      {loading ? (
-        <CSpinner color="primary" />
-      ) : data.length > 0 ? (
+      {data.length > 0 ? (
         <CTable striped bordered hover>
           <CTableHead>
             <CTableRow>
@@ -287,17 +281,15 @@ const TryPage = () => {
             {data.map((item) => (
               <CTableRow key={item.id}>
                 <CTableDataCell>{item.id}</CTableDataCell>
-                <CTableDataCell>{item.AssetName}</CTableDataCell>
-                <CTableDataCell>{item.AssetLocation}</CTableDataCell>
-                <CTableDataCell>
-                  {item.healthIndex !== null ? item.healthIndex : 'Fetching...'}
-                </CTableDataCell>
+                <CTableDataCell>{item['AssetName']}</CTableDataCell>
+                <CTableDataCell>{item['AssetLocation']}</CTableDataCell>
+                <CTableDataCell>{item.analogInputPV || 'Fetching...'}</CTableDataCell>
               </CTableRow>
             ))}
           </CTableBody>
         </CTable>
       ) : (
-        <p>No data available. Please upload a CSV file.</p>
+        <p>No data available. Please upload a CSV file</p>
       )}
     </div>
   )
