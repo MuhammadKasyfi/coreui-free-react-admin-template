@@ -1,272 +1,210 @@
-/*import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import {
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CTable,
-  CTableBody,
-  CTableRow,
-  CTableDataCell,
-  CTableHeaderCell,
-  CTableHead,
-} from '@coreui/react'
+// /* eslint-disable prettier/prettier */
+// import React, { useState, useEffect } from 'react'
+// import axios from 'axios'
+// import GaugeComponent from 'react-gauge-component'
+// import { CChartDoughnut } from '@coreui/react-chartjs'
+// import {
+//   CCard,
+//   CCardBody,
+//   CCardHeader,
+//   CCol,
+//   CRow,
+//   CTable,
+//   CTableBody,
+//   CTableDataCell,
+//   CTableHead,
+//   CTableHeaderCell,
+//   CTableRow,
+// } from '@coreui/react'
 
-const TryPage = () => {
-  const [devices, setDevices] = useState([])
-  //const [error, setError] = useState(null)
-  const api = 'https://localhost:8002/api/v2'
-  const initialPath = 'System/Core/OpticsSource/AMS Device Manager/EPM Subang/Demo Set'
+// const TryPage = () => {
+//   const [demoData, setDemoData] = useState([])
 
-  const assetTags = {
-    DeltaV: ['PT-1100', 'PT-1107', 'PT-1200', 'PT-1300', 'PT-1404', 'QZT-1008'],
-    HART: ['LCV-2011', 'TT-1000', 'TT-1010'],
-  }
+//   const getOAuthToken = async () => {
+//     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
 
-  const params = [
-    'Asset.Tag',
-    'Asset.Manufacturer',
-    'Asset.ModelNumber',
-    'Asset.SerialNumber',
-    'Criticality',
-    'Location.Path',
-  ]
+//     const credentials = {
+//       grant_type: 'password',
+//       authority: 'builtin',
+//       username: 'OpticsWEBAPIL4',
+//       password: 'EmersonProcess#1',
+//     }
 
-  const getOAuthToken = async () => {
-    const tokenUrl = 'https://localhost:8002/api/oauth2/token'
-    const credentials = {
-      grant_type: 'password',
-      authority: 'builtin',
-      username: 'OpticsWEBAPIL4',
-      password: 'EmersonProcess#1',
-    }
+//     try {
+//       const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
+//         headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded',
+//         },
+//       })
 
-    try {
-      const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
-      return response.data.access_token
-    } catch (error) {
-      console.error('Error fetching token: ', error)
-      return null
-    }
-  }
+//       const token = response.data.access_token
+//       console.log('Token: ', token)
 
-  const fetchDeviceData = async (tag, token) => {
-    try {
-      const queryParams = params
-        .map(
-          (param) =>
-            `identifier=${encodeURIComponent(`${initialPath}/DeltaV/HART/${tag}.${param}`)}`,
-        )
-        .join('&')
+//       return token
+//     } catch (error) {
+//       console.error('Error fetchin token: ', error)
+//       return null
+//     }
+//   }
+//   const getDemoData = async (token) => {
+//     const opticsURL =
+//       'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011' // replace LCV-2011 with loop value
+//     const identifier =
+//       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
+//     // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000'] < -- use list to loop through and save to SQL
+//     // FETCH from CSV -> D.ID = [01, 02, 03, 04] OR JSON
+//     // LOOP 
 
-      const url = `${api}/read?${queryParams}`
+//     //TODO while loop looping through MYSQL device IDs while (data)
+//     try {
+//       const response = await axios.get(`${opticsURL}/_healthindex`, { // 
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: 'application/json',
+//         },
+//       })
+//       console.log('Get LCV-2011 health data: ', response.data)
+//       setDemoData(response.data.data || [])
 
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
+//       const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
+//         //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: 'application/json',
+//         },
+        
+//       })
+//       console.log('Get all data: ', response2.data)
 
-      console.log('API Response:', response.data) // Debugging
+//       // Fetch devices in the HART directory
+//       const devicesResponse = await axios.get(`${hartURL}.LocationPath`, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: 'application/json',
+//         },
+//       })
+//       console.log('Get all Devices: ', devicesResponse.data)
+//     } catch (error) {
+//       if (error.code === 'ECONNABORTED') {
+//         console.error('Request timed out:', error.message)
+//       } else {
+//         console.error('Error fetching data: ', error.response.data)
+//       }
+//     }
+//   }
 
-      return response.data.devices || [] // Make sure it's always an array
-    } catch (error) {
-      console.error(`Error fetching data for tag ${tag}:`, error)
-      return null
-    }
-  }
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const token = await getOAuthToken()
+//       if (token) {
+//         await getDemoData(token)
+//       }
+//     }
 
-  const handleDeviceData = (device) => {
-    return {
-      tag: device['Asset.Tag'],
-      manufacturer: device['Asset.Manufacturer'],
-      modelNumber: device['Asset.ModelNumber'],
-      serialNumber: device['Asset.SerialNumber'],
-      criticality: device['Criticality'],
-      locationPath: device['LocationPath'],
-    }
-  }
+//     fetchData() //fetch token
+//   }, [])
 
-  useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        const token = await getOAuthToken()
-        if (!token) {
-          throw new Error('Failed to retrieve OAuth token')
-        }
+//   return (
+//     <>
+//       <CCard>
+//         <CCardHeader>
+//           <h5>Demo Data</h5>
+//         </CCardHeader>
+//         <CCardBody>
+//           {demoData.length > 0 ? (
+//             demoData.map((item, index) => (
+//               <CRow key={index}>
+//                 <CCol>
+//                   <h6>Item {index + 1}</h6>
+//                   <p>
+//                     <strong>ID:</strong> {item.i}
+//                   </p>
+//                   <p>
+//                     <strong>Path:</strong> {item.p}
+//                   </p>
+//                   <p>
+//                     <strong>Quantity:</strong> {item.q}
+//                   </p>
+//                   <p>
+//                     <strong>Timestamp:</strong> {new Date(item.t).toLocaleString()}
+//                   </p>
+//                   <p>
+//                     <strong>Value:</strong> {item.v}
+//                   </p>
+//                 </CCol>
+//               </CRow>
+//             ))
+//           ) : (
+//             <CRow>
+//               <CCol>
+//                 <p>No demo data available.</p>
+//               </CCol>
+//             </CRow>
+//           )}
+//         </CCardBody>
+//       </CCard>
+//     </>
+//   )
+// }
 
-        const allDevices = []
+// export default TryPage
 
-        for (const tag of assetTags.DeltaV) {
-          const deviceData = await fetchDeviceData(tag, token)
-          console.log('Fetched Device Data:', deviceData) // Debugging
-          if (Array.isArray(deviceData)) {
-            const formattedDeviceData = deviceData.map((paramData) => handleDeviceData(paramData))
-            allDevices.push(...formattedDeviceData)
-          } else {
-            console.warn(`deviceData is not an array for tag ${tag}`, deviceData)
+//csv to json
+import React, { useState } from "react";
+import Papa from "papaparse"
+
+const CSVUploader = () => {
+  const [data, setData] = useState([])
+
+  //parse cvs and add id
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      Papa.parse(file,
+        {
+          header: true, // conv rows into json
+          skipEmptyLines: true,
+          complete: (result) => {
+            //add id to each row
+            const jsonData = result.data.map((row, index) => ({
+              id: `${index}`, //id using index
+              ...row, //inc ori row data
+            }))
+            setData(jsonData)
           }
-        }
-
-        console.log('All Devices:', allDevices) // Debugging
-        setDevices(allDevices)
-      } catch (err) {
-        console.error(err)
-        setError(err)
-      }
-    }
-
-    fetchDevices()
-  }, [])
-
-  return (
-    <CCard>
-      <CCardHeader>Device Listing</CCardHeader>
-      <CCardBody>
-        <CTable>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell>Tag</CTableHeaderCell>
-              <CTableHeaderCell>Manufacturer</CTableHeaderCell>
-              <CTableHeaderCell>Model Number</CTableHeaderCell>
-              <CTableHeaderCell>Serial Number</CTableHeaderCell>
-              <CTableHeaderCell>Criticality</CTableHeaderCell>
-              <CTableHeaderCell>Location Path</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {devices.length > 0 ? (
-              devices.map((device, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell>{device.tag}</CTableDataCell>
-                  <CTableDataCell>{device.manufacturer}</CTableDataCell>
-                  <CTableDataCell>{device.modelNumber}</CTableDataCell>
-                  <CTableDataCell>{device.serialNumber}</CTableDataCell>
-                  <CTableDataCell>{device.criticality}</CTableDataCell>
-                  <CTableDataCell>{device.locationPath}</CTableDataCell>
-                </CTableRow>
-              ))
-            ) : (
-              <CTableRow>
-                <CTableDataCell colSpan="6">No devices found</CTableDataCell>
-              </CTableRow>
-            )}
-          </CTableBody>
-        </CTable>
-      </CCardBody>
-    </CCard>
-  )
-}
-
-export default TryPage
-*/
-
-// Frontend: React.js
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import {
-  CContainer,
-  CRow,
-  CCol,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CSpinner,
-} from '@coreui/react'
-
-const TryPage = () => {
-  const [collectionData, setCollectionData] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchCollectionData()
-  }, [])
-
-  const fetchCollectionData = async () => {
-    try {
-      const response = await axios.get('http://localhost:8002/api/v2') // Replace API endpoint
-      setCollectionData(response.data)
-      setLoading(false)
-    } catch (error) {
-      console.error('Error fetching collection data:', error)
-      setLoading(false)
+        })
     }
   }
-
   return (
-    <CContainer>
-      <CRow className="my-4">
-        <CCol>
-          <h1>Collection Data</h1>
-        </CCol>
-      </CRow>
+    <div>
+      <h2>CSV Uploader</h2>
+      <input type="file" accept=".csv" onChange={handleFileChange}/>
 
-      <CRow>
-        <CCol>
-          <CCard>
-            <CCardHeader>Data List</CCardHeader>
-            <CCardBody>
-              {loading ? (
-                <div className="text-center">
-                  <CSpinner color="primary" />
-                </div>
-              ) : collectionData.length === 0 ? (
-                <p>No data available in the collection.</p>
-              ) : (
-                <CTable hover bordered responsive>
-                  <CTableHead>
-                    <CTableRow>
-                      {/* Add your table headers based on collection fields */}
-                      <CTableHeaderCell>#</CTableHeaderCell>
-                      <CTableHeaderCell>ID</CTableHeaderCell>
-                      <CTableHeaderCell>Field 1</CTableHeaderCell>
-                      <CTableHeaderCell>Field 2</CTableHeaderCell>
-                      <CTableHeaderCell>Actions</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {collectionData.map((item, index) => (
-                      <CTableRow key={item._id}>
-                        <CTableDataCell>{index + 1}</CTableDataCell>
-                        <CTableDataCell>{item._id}</CTableDataCell>
-                        <CTableDataCell>{item.field1}</CTableDataCell>
-                        <CTableDataCell>{item.field2}</CTableDataCell>
-                        <CTableDataCell>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => alert(`Viewing ${item._id}`)}
-                          >
-                            View
-                          </button>{' '}
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => alert(`Deleting ${item._id}`)}
-                          >
-                            Delete
-                          </button>
-                        </CTableDataCell>
-                      </CTableRow>
-                    ))}
-                  </CTableBody>
-                </CTable>
-              )}
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
-    </CContainer>
+      <h3>Asset List</h3>
+      {data.length > 0 ? (
+        <table border="1" style={{width: "100%", textAlign: "left" }}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Asset Name</th>
+              <th>Asset Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item["AssetName"]}</td>
+                <td>{item["AssetLocation"]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No data available. Please upload a CSV file</p>
+      )}
+    </div>
   )
 }
 
-export default TryPage
+export default CSVUploader

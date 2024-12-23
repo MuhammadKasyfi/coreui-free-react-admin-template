@@ -48,42 +48,45 @@ const AlertSummaryBravo = () => {
   }
   const getDemoData = async (token) => {
     const opticsURL =
-      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
+      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011' // replace LCV-2011 with loop value
     const identifier =
       'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-    const hartURL =
-      'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-    // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000']
+    // const subfolders = ['LCV-2011', 'TT-1010', 'TT-1000'] < -- use list to loop through and save to SQL
+    // FETCH from CSV -> D.ID = [01, 02, 03, 04]
+    // LOOP 
 
-    //TODO while loop 
+    //TODO loop looping through JSON array
+    // for (i=0;i<map.item)
     try {
-      const response = await axios.get(`https://localhost:8002/api/v2/read?identifier=/Enterprise/Site/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_health`, {
+      const response = await axios.get(`${opticsURL}/_healthindex`, { // ${item.AssetName}
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
         },
       })
-      console.log('Get LCV-2011 health data: ', response.data)
+      console.log('Get LCV-2011 health data: ', response.data) // "Get ${item.AssetName} health data"
       setDemoData(response.data.data || [])
 
-      const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
-        //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-        
-      })
-      console.log('Get all data: ', response2.data)
+      // })
 
-      // Fetch devices in the HART directory
-      const devicesResponse = await axios.get(`${hartURL}.LocationPath`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      })
-      console.log('Get all Devices: ', devicesResponse.data)
+      // const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
+      //   //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //     Accept: 'application/json',
+      //   },
+        
+      // })
+      // console.log('Get all data: ', response2.data)
+
+      // // Fetch devices in the HART directory
+      // const devicesResponse = await axios.get(`${hartURL}.LocationPath`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //     Accept: 'application/json',
+      //   },
+      // })
+      // console.log('Get all Devices: ', devicesResponse.data)
       
     ////////////////////
 
