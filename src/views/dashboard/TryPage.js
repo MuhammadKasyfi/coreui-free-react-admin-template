@@ -217,7 +217,7 @@ const TryPage = () => {
     const url = `${baseUrl}?identifier=${identifier}`
 
     try {
-      const response = await axios.get(`${url}/Analog Input (PV)`, {
+      const response = await axios.get(`${url}/_healthindex`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -243,13 +243,16 @@ const TryPage = () => {
     const allData = []
     for (const item of data) {
       const assetName = item.AssetName
+      let healthindexData = {}
       if (assetName) {
-        const fetchedData = await getDemoData(token, assetName)
-        const healthIndex = fetchedData.length > 0 ? fetchedData[0].value : 'N/A'
+        //const fetchedData = await getDemoData(token, assetName)
         //allData.push(...fetchedData)
-        return { ...item, HealthIndex: healthIndex }
+        healthindexData = await getDemoData(token, assetName)
       }
-      return item
+      allData.push({
+        ...item,
+        HealthIndex: healthindexData.value ||  'N/A',
+      })
     }
     setDemoData(allData)
     setLoading(false)
@@ -267,7 +270,11 @@ const TryPage = () => {
       <input type="file" accept=".csv" onChange={handleFileChange} />
 
       <h3>Asset List</h3>
-      {data.length > 0 ? (
+      {loading ? (
+        <p>Loading data...</p>
+      ) : demoData.length > 0 ? (
+      //}
+      //{data.length > 0 ? (
         <CTable striped bordered hover>
           <CTableHead>
             <CTableRow>
@@ -278,12 +285,12 @@ const TryPage = () => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {data.map((item) => (
+            {demoData.map((item) => (
               <CTableRow key={item.id}>
                 <CTableDataCell>{item.id}</CTableDataCell>
                 <CTableDataCell>{item['AssetName']}</CTableDataCell>
                 <CTableDataCell>{item['AssetLocation']}</CTableDataCell>
-                <CTableDataCell>{item.analogInputPV || 'Fetching...'}</CTableDataCell>
+                <CTableDataCell>{item['HealthIndex']}</CTableDataCell>
               </CTableRow>
             ))}
           </CTableBody>
