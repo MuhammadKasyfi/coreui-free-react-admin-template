@@ -163,13 +163,13 @@ import {
 } from '@coreui/react'
 
 const TryPage = () => {
-  const [data, setData] = useState([])
-  const [demoData, setDemoData] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState([]) // CSV data
+  const [demoData, setDemoData] = useState([]) // Health index data
+  const [loading, setLoading] = useState(false) // Loading state
 
+  // Fetch OAuth token
   const getOAuthToken = async () => {
     const tokenUrl = 'https://localhost:8002/api/oauth2/token'
-
     const credentials = {
       grant_type: 'password',
       authority: 'builtin',
@@ -179,61 +179,48 @@ const TryPage = () => {
 
     try {
       const response = await axios.post(tokenUrl, new URLSearchParams(credentials), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       })
-
-      const token = response.data.access_token
-      console.log('Token: ', token)
-
-      return token
+      return response.data.access_token
     } catch (error) {
-      console.error('Error fetchin token: ', error)
+      console.error('Error fetching token:', error)
       return null
     }
   }
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      Papa.parse(file, {
-        header: true, //convert csv to json
-        skipEmptyLines: true,
-        complete: (result) => {
-          const jsonData = result.data.map((row, index) => ({
-            id: `${index}`, //assign id
-            ...row, // include original row data
-          }))
-          setData(jsonData)
-        },
-      })
-    }
-  }
-
-  const getDemoData = async (token, assetName) => {
+  // Fetch health index data for a specific asset
+  const getDemoData = async (asssetTag, baseIdentifier, locationPath) => {
     const baseUrl = 'https://localhost:8002/api/v2/read'
-    const identifier = `/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/${assetName}`
+    const identifier = `/${identifier}/${locationPath}${assetTag}`
     const url = `${baseUrl}?identifier=${identifier}`
+    const param = `identifier=${identifier}`
 
     try {
-      const response = await axios.get(`${url}/Analog Input (PV)`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
+      const token = await getOAuthToken()
+      const response = await axios.get(
+        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param}.LocationPath&${param}.PhysicalPath`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
         },
-      })
-      console.log(`Fetched data for ${assetName}:`, response.data)
-      return response.data.data || []
+      )
+      // return response.data.data || []
+      return response.data.data
     } catch (error) {
-      console.error(`Error fetching data for ${assetName}:`, error.response?.data || error.message)
-      return []
+      console.error(`Error fetching data for ${assetTag}:`, error.response?.data || error.message)
+      // return []
     }
   }
 
+  getDemoData()
+
+  // Fetch demo data for all assets
   const fetchDemoData = async () => {
     setLoading(true)
     const token = await getOAuthToken()
+
     if (!token) {
       console.error('Failed to retrieve OAuth token.')
       setLoading(false)
@@ -242,23 +229,60 @@ const TryPage = () => {
 
     const allData = []
     for (const item of data) {
-      const assetName = item.AssetName
-      if (assetName) {
-        const fetchedData = await getDemoData(token, assetName)
-        const healthIndex = fetchedData.length > 0 ? fetchedData[0].value : 'N/A'
-        //allData.push(...fetchedData)
-        return { ...item, HealthIndex: healthIndex }
+      if (item.AssetName) {
+        const fetchedData = await getDemoData(item.AssetTag, item.BaseIdentifier, item.locationPath)
+        const healthIndex =
+          fetchedData?.[0]?.v !== undefined && fetchedData?.[0]?.v !== null
+            ? fetchedData?.[0]?.v
+            : 'N/A'
+        allData.push({
+          id: item.id,
+          healthIndex,
+          serialNumber: fetchedData?.[1]?.v || 'N/A',
+          manufacturer: fetchedData?.[2]?.v || 'N/A',
+          modelNumber: fetchedData?.[3]?.v || 'N/A',
+          locationPath: fetchedData?.[4]?.v || 'N/A',
+          physicalPath: fetchedData?.[5]?.v || 'N/A',
+        })
       }
-      return item
     }
     setDemoData(allData)
     setLoading(false)
   }
 
-  useEffect(() => {
-    if (data.length > 0) {
-      fetchDemoData()
+  // Handle CSV file upload
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          const jsonData = result.data.map((row, index) => ({ id: `${index}`, ...row }))
+          setData(jsonData)
+        },
+      })
     }
+  }
+
+  // Combine demo data with CSV data
+  const getCombinedData = () => {
+    return data.map((item) => {
+      const demoItem = demoData.find((demo) => demo.id === item.id)
+      return {
+        ...item,
+        healthIndex: demoItem?.healthIndex || 'N/A',
+        serialNumber: demoItem?.serialNumber || 'N/A',
+        manufacturer: demoItem?.manufacturer || 'N/A',
+        modelNumber: demoItem?.modelNumber || 'N/A',
+        locationPath: demoItem?.locationPath || 'N/A',
+        physicalPath: demoItem?.physicalPath || 'N/A',
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (data.length > 0) fetchDemoData()
   }, [data])
 
   return (
@@ -267,7 +291,9 @@ const TryPage = () => {
       <input type="file" accept=".csv" onChange={handleFileChange} />
 
       <h3>Asset List</h3>
-      {data.length > 0 ? (
+      {loading ? (
+        <p>Loading data...</p>
+      ) : data.length > 0 ? (
         <CTable striped bordered hover>
           <CTableHead>
             <CTableRow>
@@ -275,21 +301,31 @@ const TryPage = () => {
               <CTableHeaderCell>Asset Name</CTableHeaderCell>
               <CTableHeaderCell>Asset Location</CTableHeaderCell>
               <CTableHeaderCell>Health Index</CTableHeaderCell>
+              <CTableHeaderCell>Serial Number</CTableHeaderCell>
+              <CTableHeaderCell>Manufacturer</CTableHeaderCell>
+              <CTableHeaderCell>Model Number</CTableHeaderCell>
+              <CTableHeaderCell>Location Path</CTableHeaderCell>
+              <CTableHeaderCell>Physical Path</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {data.map((item) => (
+            {getCombinedData().map((item) => (
               <CTableRow key={item.id}>
                 <CTableDataCell>{item.id}</CTableDataCell>
-                <CTableDataCell>{item['AssetName']}</CTableDataCell>
-                <CTableDataCell>{item['AssetLocation']}</CTableDataCell>
-                <CTableDataCell>{item.analogInputPV || 'Fetching...'}</CTableDataCell>
+                <CTableDataCell>{item.AssetTag}</CTableDataCell>
+                <CTableDataCell>{item.AssetLocation}</CTableDataCell>
+                <CTableDataCell>{item.healthIndex}</CTableDataCell>
+                <CTableDataCell>{item.serialNumber}</CTableDataCell>
+                <CTableDataCell>{item.manufacturer}</CTableDataCell>
+                <CTableDataCell>{item.modelNumber}</CTableDataCell>
+                <CTableDataCell>{item.locationPath}</CTableDataCell>
+                <CTableDataCell>{item.physicalPath}</CTableDataCell>
               </CTableRow>
             ))}
           </CTableBody>
         </CTable>
       ) : (
-        <p>No data available. Please upload a CSV file</p>
+        <p>No data available. Please upload a CSV file.</p>
       )}
     </div>
   )
