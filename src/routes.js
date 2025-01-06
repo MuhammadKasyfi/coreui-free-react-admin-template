@@ -1,6 +1,7 @@
 import { element } from 'prop-types'
 import React from 'react'
 
+// const Login = React.lazy(() => import('./pages/login/Login.js'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const AlertSummaryBravo = React.lazy(() => import('./views/dashboard/AlertSummaryBravo'))
 const TryPage = React.lazy(() => import('./views/dashboard/TryPage'))
@@ -56,7 +57,8 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
+  { path: '/', exact: true, name: 'Login' },
+  { path: '/home', name: 'Home', element: Home },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/dashboard/alertSummaryBravo', name: AlertSummaryBravo, element: AlertSummaryBravo },
   { path: '/dashboard/TryPage', name: TryPage, element: TryPage },
