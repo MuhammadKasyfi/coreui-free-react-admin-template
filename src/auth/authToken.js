@@ -27,3 +27,23 @@ export const getOAuthToken = async () => {
     throw new Error('Failed to retrieve OAuth token')
   }
 }
+
+export const getAuthUsername = async () => {
+  try {
+    const username = credentials.username
+    return username
+  } catch (error) {
+    console.error('Error fetching token: ', error.response?.data || error.message)
+    throw new Error('Failed to retrieve OAuth token')
+  }
+}
+
+export const getAuthPassword = async () => {
+  try {
+    const password = credentials.password
+    return password
+  } catch (error) {
+    console.error('Error fetching token: ', error.response?.data || error.message)
+    throw new Error('Failed to retrieve OAuth token')
+  }
+}
