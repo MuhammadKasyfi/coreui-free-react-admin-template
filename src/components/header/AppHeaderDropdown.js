@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CAvatar,
   CBadge,
+  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -24,14 +25,61 @@ import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
-const AppHeaderDropdown = () => {
+import { useNavigate } from 'react-router-dom'
+
+const AppHeaderDropdown = ({}) => {
+  const [username, setUsername] = useState('')
+  const [initials, setInitials] = useState('')
+  const navigate = useNavigate()
+
+  const generateInitials = (name) => {
+    if (!name) return ''
+    const nameParts = name.split(' ')
+    return nameParts
+      .map((part) => part[0]?.toUpperCase())
+      .join('')
+      .slice(0, 2)
+  }
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (!token) {
+      alert('Token is unable to be retrieved')
+    } else {
+      setUsername(storedUsername || 'User')
+      setInitials(generateInitials(storedUsername))
+    }
+  }, [navigate])
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('username')
+    navigate('/')
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        {/* <CAvatar src={avatar8} size="md" /> */}
+        <div
+          style={{
+            width: '40px',
+            heigth: '40px',
+            borderRadius: '50%',
+            backgroundColor: 'blue',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '16px',
+          }}
+        >
+          {' '}
+          {initials}
+        </div>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
+        {/* <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
@@ -83,10 +131,15 @@ const AppHeaderDropdown = () => {
             42
           </CBadge>
         </CDropdownItem>
-        <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+        <CDropdownDivider /> */}
+        <CDropdownItem header="true" className="head-class">
+          {' '}
+          Welcome, {username || 'User'}
+        </CDropdownItem>
+        <CDropdownItem>
+          <CButton color="danger" onClick={handleLogout}>
+            Logout
+          </CButton>
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
