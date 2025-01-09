@@ -10,11 +10,19 @@ import {
   CTableHeaderCell,
   CTableDataCell,
 } from '@coreui/react'
+import { json } from 'react-router-dom'
 
-const TryPage = () => {
+const AssetList = () => {
   const [data, setData] = useState([]) // CSV data
   const [demoData, setDemoData] = useState([]) // Health index data
   const [loading, setLoading] = useState(false) // Loading state
+
+  useEffect(() => {
+    const savedData = localStorage.getItem('uploadedCSVData')
+    if (savedData) {
+      setData(JSON.parse(savedData))
+    }
+  }, [])
 
   // Fetch health index data for a specific asset
   const getDemoData = async (assetTag, baseIdentifier, locationPath) => {
@@ -26,7 +34,7 @@ const TryPage = () => {
     try {
       const token = await getOAuthToken()
       const response = await axios.get(
-        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param}.LocationPath&${param}.PhysicalPath`,
+        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,8 +42,9 @@ const TryPage = () => {
           },
         },
       )
-      // return response.data.data || []
-      return response.data.data
+      if (assetTag)
+        // return response.data.data || []
+        return response.data.data
     } catch (error) {
       console.error(`Error fetching data for ${assetTag}:`, error.response?.data || error.message)
       // return []
@@ -69,8 +78,6 @@ const TryPage = () => {
           serialNumber: fetchedData?.[1]?.v || 'N/A',
           manufacturer: fetchedData?.[2]?.v || 'N/A',
           modelNumber: fetchedData?.[3]?.v || 'N/A',
-          locationPath: fetchedData?.[4]?.v || 'N/A',
-          physicalPath: fetchedData?.[5]?.v || 'N/A',
         })
       }
     }
@@ -88,6 +95,7 @@ const TryPage = () => {
         complete: (result) => {
           const jsonData = result.data.map((row, index) => ({ id: `${index}`, ...row }))
           setData(jsonData)
+          localStorage.setItem('uploadedCSVData', JSON.stringify(jsonData))
         },
       })
     }
@@ -103,8 +111,6 @@ const TryPage = () => {
         serialNumber: demoItem?.serialNumber || 'N/A',
         manufacturer: demoItem?.manufacturer || 'N/A',
         modelNumber: demoItem?.modelNumber || 'N/A',
-        locationPath: demoItem?.locationPath || 'N/A',
-        physicalPath: demoItem?.physicalPath || 'N/A',
       }
     })
   }
@@ -132,8 +138,6 @@ const TryPage = () => {
               <CTableHeaderCell>Serial Number</CTableHeaderCell>
               <CTableHeaderCell>Manufacturer</CTableHeaderCell>
               <CTableHeaderCell>Model Number</CTableHeaderCell>
-              <CTableHeaderCell>Location Path</CTableHeaderCell>
-              <CTableHeaderCell>Physical Path</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
@@ -146,8 +150,6 @@ const TryPage = () => {
                 <CTableDataCell>{item.serialNumber}</CTableDataCell>
                 <CTableDataCell>{item.manufacturer}</CTableDataCell>
                 <CTableDataCell>{item.modelNumber}</CTableDataCell>
-                <CTableDataCell>{item.locationPath}</CTableDataCell>
-                <CTableDataCell>{item.physicalPath}</CTableDataCell>
               </CTableRow>
             ))}
           </CTableBody>
@@ -159,4 +161,4 @@ const TryPage = () => {
   )
 }
 
-export default TryPage
+export default AssetList
