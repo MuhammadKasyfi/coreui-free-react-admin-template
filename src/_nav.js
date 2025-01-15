@@ -23,6 +23,11 @@ const _nav = [
   // },
   {
     component: CNavItem,
+    name: 'Login',
+    to: '/login',
+  },
+  {
+    component: CNavItem,
     name: 'Home',
     to: '/home',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
