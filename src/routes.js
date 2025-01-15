@@ -1,10 +1,12 @@
 import { element } from 'prop-types'
 import React from 'react'
 
+// const Login = React.lazy(() => ('./views/pages/login/Login'))
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const AlertSummaryBravo = React.lazy(() => import('./views/dashboard/AlertSummaryBravo'))
-const TryPage = React.lazy(() => import('./views/dashboard/TryPage'))
+const AssetList = React.lazy(() => import('./views/dashboard/AssetList'))
 const DeviceListing = React.lazy(() => import('./views/devices/DeviceListing'))
+const DevicePopulation = React.lazy(() => import('./views/devices/DevicePopulation'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 
@@ -56,11 +58,12 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
+  { path: '/', exact: true, name: 'Login' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/dashboard/alertSummaryBravo', name: AlertSummaryBravo, element: AlertSummaryBravo },
-  { path: '/dashboard/TryPage', name: TryPage, element: TryPage },
+  { path: '/dashboard/assetList', name: AssetList, element: AssetList },
   { path: '/devices/DeviceListing', name: DeviceListing, element: DeviceListing },
+  { path: '/devices/DevicePopulation', name: DevicePopulation, element: DevicePopulation},
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },

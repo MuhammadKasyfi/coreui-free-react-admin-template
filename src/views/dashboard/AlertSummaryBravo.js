@@ -69,15 +69,15 @@ const AlertSummaryBravo = () => {
 
       // })
 
-      // const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
-      //   //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //     Accept: 'application/json',
-      //   },
+      const response2 = await axios.get(`${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`, {
+        //Comma separated string to customize which fields should be included in the response, by default 'i,p,v,q,t'. Provide 'ALL' to include all fields.
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
         
-      // })
-      // console.log('Get all data: ', response2.data)
+      })
+      console.log('Get all data: ', response2.data)
 
       // // Fetch devices in the HART directory
       // const devicesResponse = await axios.get(`${hartURL}.LocationPath`, {

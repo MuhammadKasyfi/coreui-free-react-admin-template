@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CAvatar,
   CBadge,
+  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -22,16 +23,76 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-import avatar8 from './../../assets/images/avatars/8.jpg'
+// import avatar8 from './../../assets/images/avatars/8.jpg'
 
-const AppHeaderDropdown = () => {
+import { useNavigate } from "react-router-dom"
+
+const AppHeaderDropdown = ({}) => {
+
+  const [username, setUsername] = useState('')
+  const [initials, setInitials] = useState('')
+  const navigate = useNavigate()
+
+  const generateInitials = (name) => {
+    if (!name) return ''
+    const nameParts = name.split(' ')
+    return nameParts.map((part) => part[0]?.toUpperCase()).join('').slice(0, 2)
+  }
+  
+  useEffect(() => {
+    const token = localStorage.getItem('authToken')
+    const storedUsername = localStorage.getItem('username')
+    if (!token) {
+      alert('Token is unable to be retrieved')
+    } else {
+      setUsername(storedUsername || 'User')
+      setInitials(generateInitials(storedUsername))
+    }
+  }, [navigate])
+  
+  // useEffect (() => {
+  //   const fetchUserInfo = () => {
+  //   const storedUsername = localStorage.getItem('username')
+  //   if (storedUsername) {
+  //     setUsername(storedUsername)
+  //     setInitials(generateInitials(storedUsername))
+  //   } else {
+  //     navigate('/')
+  //   }
+  // }
+  // fetchUserInfo()
+  // }, [navigate])
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('username')
+    // alert('Logged out successfully')
+    navigate('/')
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            backgroundColor: '#007bff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '16px'
+          }}
+          >
+            {initials}
+        </div>
+        {/* <CAvatar src={avatar8} size="md" /> */}
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
+        {/* <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
         <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates
@@ -83,10 +144,10 @@ const AppHeaderDropdown = () => {
             42
           </CBadge>
         </CDropdownItem>
-        <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+        <CDropdownDivider /> */}
+        <CDropdownItem header='true' className='head-class'> Welcome, {username || 'User'}</CDropdownItem>
+        <CDropdownItem>
+          <CButton color='danger' onClick={handleLogout}>Logout</CButton>
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
