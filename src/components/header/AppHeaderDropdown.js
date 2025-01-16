@@ -3,7 +3,6 @@ import {
   CAvatar,
   CBadge,
   CButton,
-  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -26,10 +25,9 @@ import CIcon from '@coreui/icons-react'
 
 // import avatar8 from './../../assets/images/avatars/8.jpg'
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from 'react-router-dom'
 
 const AppHeaderDropdown = ({}) => {
-
   const [username, setUsername] = useState('')
   const [initials, setInitials] = useState('')
   const navigate = useNavigate()
@@ -37,9 +35,12 @@ const AppHeaderDropdown = ({}) => {
   const generateInitials = (name) => {
     if (!name) return ''
     const nameParts = name.split(' ')
-    return nameParts.map((part) => part[0]?.toUpperCase()).join('').slice(0, 2)
+    return nameParts
+      .map((part) => part[0]?.toUpperCase())
+      .join('')
+      .slice(0, 2)
   }
-  
+
   useEffect(() => {
     const token = localStorage.getItem('authToken')
     const storedUsername = localStorage.getItem('username')
@@ -50,7 +51,7 @@ const AppHeaderDropdown = ({}) => {
       setInitials(generateInitials(storedUsername))
     }
   }, [navigate])
-  
+
   // useEffect (() => {
   //   const fetchUserInfo = () => {
   //   const storedUsername = localStorage.getItem('username')
@@ -85,10 +86,10 @@ const AppHeaderDropdown = ({}) => {
             justifyContent: 'center',
             color: 'white',
             fontWeight: 'bold',
-            fontSize: '16px'
+            fontSize: '16px',
           }}
-          >
-            {initials}
+        >
+          {initials}
         </div>
         {/* <CAvatar src={avatar8} size="md" /> */}
       </CDropdownToggle>
@@ -147,9 +148,14 @@ const AppHeaderDropdown = ({}) => {
           </CBadge>
         </CDropdownItem>
         <CDropdownDivider /> */}
-        <CDropdownItem header='true' className='head-class'> Welcome, {username || 'User'}</CDropdownItem>
+        <CDropdownItem header="true" className="head-class">
+          {/* {' '} */}
+          Welcome, {username || 'User'}
+        </CDropdownItem>
         <CDropdownItem>
-          <CButton color='danger' onClick={handleLogout}>Logout</CButton>
+          <CButton color="danger" onClick={handleLogout}>
+            Logout
+          </CButton>
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

@@ -19,19 +19,18 @@ const DeviceListing = () => {
 
   useEffect(() => {
     const savedData = localStorage.getItem('uploadedCSVData')
-    if (savedData){
+    if (savedData) {
       setData(JSON.parse(savedData))
     }
   }, [])
 
   const getDemoData = async (assetTag, baseIdentifier, locationPath, isa95Path) => {
+    // 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
+    //   const opticsURL = 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011' // replace LCV-2011 with loop value
+    //  const identifier = 'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
+    //   ${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`,
 
-  // 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-  //   const opticsURL = 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011' // replace LCV-2011 with loop value
-  //  const identifier = 'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-  //   ${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`,
-
-  //https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_healthindex&identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011.Asset.manufacturer
+    //https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_healthindex&identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011.Asset.manufacturer
     const baseUrl = 'https://localhost:8002/api/v2/read'
     const identifier = `/${baseIdentifier}/${locationPath}/${assetTag}`
     const isaIdentifier = `/${isa95Path}/${assetTag}`
@@ -42,14 +41,16 @@ const DeviceListing = () => {
 
     try {
       const token = await getOAuthToken()
-      const response = await axios.get(`${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param2}.DeviceRevision&${param2}.HARTProtocolRevision&${param}.Criticality`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
+      const response = await axios.get(
+        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param2}.DeviceRevision&${param2}.HARTProtocolRevision&${param}.Criticality`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
         },
-      })
-      if (assetTag)
-      console.log(`Fetched data for ${assetTag}:`, response.data)
+      )
+      if (assetTag) console.log(`Fetched data for ${assetTag}:`, response.data)
       return response.data.data
     } catch (error) {
       console.error(`Error fetching data for ${assetTag}:`, error.response?.data || error.message)
@@ -73,9 +74,17 @@ const DeviceListing = () => {
       const assetTag = item.AssetTag
       if (assetTag) {
         // const fetchedData = await getDemoData(item.AssetTag, item.LocationPath)
-        const fetchedData = await getDemoData(item.AssetTag, item. BaseIdentifier, item.LocationPath, item.ISA95Path)
-        const healthIndex = fetchedData?.[0]?.v !== undefined && fetchedData?.[0]?.v !== null ? fetchedData[0]?.v : 'N/A'
-        allData.push({ 
+        const fetchedData = await getDemoData(
+          item.AssetTag,
+          item.BaseIdentifier,
+          item.LocationPath,
+          item.ISA95Path,
+        )
+        const healthIndex =
+          fetchedData?.[0]?.v !== undefined && fetchedData?.[0]?.v !== null
+            ? fetchedData[0]?.v
+            : 'N/A'
+        allData.push({
           id: item.id,
           healthIndex,
           serialNumber: fetchedData?.[1]?.v || 'N/A',
@@ -99,7 +108,7 @@ const DeviceListing = () => {
         skipEmptyLines: true,
         complete: (result) => {
           const jsonData = result.data.map((row, index) => ({
-            id: `${index+1}`, //assign id
+            id: `${index + 1}`, //assign id
             ...row, // include original row data
           }))
           setData(jsonData)
@@ -112,7 +121,7 @@ const DeviceListing = () => {
   const getCombinedData = () => {
     return data.map((item) => {
       const demoItem = demoData.find((demo) => demo.id === item.id)
-      return { 
+      return {
         ...item,
         healthIndex: demoItem?.healthIndex || 'N/A',
         serialNumber: demoItem?.serialNumber || 'N/A',
