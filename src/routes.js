@@ -64,7 +64,7 @@ const routes = [
   { path: '/dashboard/alertSummaryBravo', name: AlertSummaryBravo, element: AlertSummaryBravo },
   { path: '/dashboard/assetList', name: AssetList, element: AssetList },
   { path: '/devices/DeviceListing', name: DeviceListing, element: DeviceListing },
-  { path: '/devices/DevicePopulation', name: DevicePopulation, element: DevicePopulation},
+  { path: '/devices/DevicePopulation', name: DevicePopulation, element: DevicePopulation },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/theme/typography', name: 'Typography', element: Typography },
