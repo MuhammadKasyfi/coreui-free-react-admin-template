@@ -207,12 +207,11 @@
 
 // export default DevicePopulation
 
-import React, { useEffect, useState } from "react"
-import { CCol, CRow, CCard, CCardBody, CCardHeader, CContainer } from "@coreui/react"
-import { CChartBar, CChartDoughnut } from "@coreui/react-chartjs"
-import { getOAuthToken } from "../../auth/authToken"
+import React, { useEffect, useState } from 'react'
+import { CCol, CRow, CCard, CCardBody, CCardHeader, CContainer } from '@coreui/react'
+import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs'
+import { getOAuthToken } from '../../auth/authToken'
 import axios from 'axios'
-
 
 const DevicePopulation = () => {
   const [dataLocation, setDataLocation] = useState(null)
@@ -281,7 +280,7 @@ const DevicePopulation = () => {
 
           // Fetch manufacturer data
           const fetchedData = await getDemoData(row.AssetTag, row.BaseIdentifier, row.LocationPath)
-          const manufacturer = fetchedData?.[2]?.v || 'N/A'  // Assuming manufacturer is at index 2 and property 'v'
+          const manufacturer = fetchedData?.[2]?.v || 'N/A' // Assuming manufacturer is at index 2 and property 'v'
           if (manufacturer) {
             manufacturerCounts[manufacturer] = (manufacturerCounts[manufacturer] || 0) + 1
           }
@@ -296,16 +295,9 @@ const DevicePopulation = () => {
           datasets: [
             {
               data: Object.values(locationCounts),
-              backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#41B883',
-                '#E46651',
-                '#00D8FF',
-                '#DD1B16'
-              ],
-            }
-          ]
+              backgroundColor: ['#FF6384', '#36A2EB', '#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+            },
+          ],
         })
 
         setDataManufacturer({
@@ -313,20 +305,12 @@ const DevicePopulation = () => {
           datasets: [
             {
               data: Object.values(manufacturerCounts),
-              backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#41B883',
-                '#E46651',
-                '#00D8FF',
-                '#DD1B16'
-              ],
-            }
-          ]
+              backgroundColor: ['#FF6384', '#36A2EB', '#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+            },
+          ],
         })
 
         setTotalAssets(total)
-
       } catch (error) {
         console.error('Error in fetchData:', error)
       } finally {
@@ -363,8 +347,8 @@ const DevicePopulation = () => {
                         plugins: {
                           legend: {
                             position: 'top',
-                          }
-                        }
+                          },
+                        },
                       }}
                     />
                   ) : (
@@ -385,8 +369,8 @@ const DevicePopulation = () => {
                         plugins: {
                           legend: {
                             position: 'top',
-                          }
-                        }
+                          },
+                        },
                       }}
                     />
                   ) : (
@@ -409,8 +393,8 @@ const DevicePopulation = () => {
                         plugins: {
                           legend: {
                             position: 'top',
-                          }
-                        }
+                          },
+                        },
                       }}
                     />
                   ) : (
