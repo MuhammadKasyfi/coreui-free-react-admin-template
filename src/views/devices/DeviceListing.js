@@ -46,7 +46,7 @@ const DeviceListing = () => {
             Authorization: `Bearer ${token}`,
             Accept: 'application/json',
           },
-        }
+        },
       )
       return response.data.data
     } catch (error) {
@@ -157,9 +157,7 @@ const DeviceListing = () => {
   const handleLocationFilterChange = (e) => {
     const location = e.target.value
     setFilterLocations((prev) =>
-      prev.includes(location)
-        ? prev.filter((item) => item !== location)
-        : [...prev, location]
+      prev.includes(location) ? prev.filter((item) => item !== location) : [...prev, location],
     )
   }
 
@@ -171,9 +169,7 @@ const DeviceListing = () => {
     if (filterLocations.length === 0) {
       setFilteredData(combinedData)
     } else {
-      const filtered = combinedData.filter((item) =>
-        filterLocations.includes(item.AssetLocation)
-      )
+      const filtered = combinedData.filter((item) => filterLocations.includes(item.AssetLocation))
       setFilteredData(filtered)
     }
   }
