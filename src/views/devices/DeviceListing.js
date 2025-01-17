@@ -25,16 +25,9 @@ const DeviceListing = () => {
   }, [])
 
   const getDemoData = async (assetTag, baseIdentifier, locationPath, isa95Path) => {
-    // 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-    //   const opticsURL = 'https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011' // replace LCV-2011 with loop value
-    //  const identifier = 'identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011'
-    //   ${opticsURL}.Asset.tag&${identifier}.Asset.Manufacturer`,
-
-    //https://localhost:8002/api/v2/read?identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011/_healthindex&identifier=/System/Core/OpticsSource/AMS Device Manager/PSSMY SUBANG/EPM Subang/Demo Set/HART Multiplexer/HART/LCV-2011.Asset.manufacturer
     const baseUrl = 'https://localhost:8002/api/v2/read'
     const identifier = `/${baseIdentifier}/${locationPath}/${assetTag}`
     const isaIdentifier = `/${isa95Path}/${assetTag}`
-    // const identifier = `/${locationPath}/${assetTag}`
     const url = `${baseUrl}?identifier=${identifier}`
     const param = `identifier=${identifier}`
     const param2 = `identifier=${isaIdentifier}`
@@ -42,7 +35,7 @@ const DeviceListing = () => {
     try {
       const token = await getOAuthToken()
       const response = await axios.get(
-        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param2}.DeviceRevision&${param2}.HARTProtocolRevision&${param}.Criticality`,
+        `${url}/_healthindex&${param}.Asset.SerialNumber&${param}.Asset.Manufacturer&${param}.Asset.ModelNumber&${param2}.DeviceRevision&${param2}.HARTProtocolRevision&${param}.Criticality&${param2}.Interface`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -92,7 +85,8 @@ const DeviceListing = () => {
           modelNumber: fetchedData?.[3]?.v || 'N/A',
           deviceRevision: fetchedData?.[4]?.v || 'N/A',
           hartProtocolRevision: fetchedData?.[5]?.v || 'N/A',
-          criticality: fetchedData?.[6]?.v || 'N/A',
+          interface: fetchedData?.[6]?.v || 'N/A',
+          criticality: fetchedData?.[7]?.v || 'N/A',
         })
       }
     }
@@ -118,6 +112,23 @@ const DeviceListing = () => {
     }
   }
 
+  const getInterfaceLabel = (interfaceValue) => {
+    switch (interfaceValue) {
+      case '0':
+        return 'None';
+      case '1':
+        return 'Hart';
+      case '2':
+        return 'FF';
+      case '3':
+        return 'Profibus DP';
+      case '4':
+        return 'Profibus PA';
+      default:
+        return 'Unknown'; // Default case if the value is not recognized
+    }
+  }
+
   const getCombinedData = () => {
     return data.map((item) => {
       const demoItem = demoData.find((demo) => demo.id === item.id)
@@ -129,6 +140,8 @@ const DeviceListing = () => {
         modelNumber: demoItem?.modelNumber || 'N/A',
         deviceRevision: demoItem?.deviceRevision || 'N/A',
         hartProtocolRevision: demoItem?.hartProtocolRevision || 'N/A',
+        // interface: demoItem?.interface || 'N/A',
+        interface: getInterfaceLabel(demoItem?.interface), // convert to string
         criticality: demoItem?.criticality || 'N/A',
       }
     })
@@ -158,6 +171,7 @@ const DeviceListing = () => {
               <CTableHeaderCell>Model Number</CTableHeaderCell>
               <CTableHeaderCell>Device Revision</CTableHeaderCell>
               <CTableHeaderCell>HART Protocol Revision</CTableHeaderCell>
+              <CTableHeaderCell>Interface</CTableHeaderCell>
               <CTableHeaderCell>Criticality</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
@@ -173,6 +187,7 @@ const DeviceListing = () => {
                 <CTableDataCell>{item.modelNumber}</CTableDataCell>
                 <CTableDataCell>{item.deviceRevision}</CTableDataCell>
                 <CTableDataCell>{item.hartProtocolRevision}</CTableDataCell>
+                <CTableDataCell>{item.interface}</CTableDataCell>
                 <CTableDataCell>{item.criticality}</CTableDataCell>
               </CTableRow>
             ))}
@@ -182,6 +197,12 @@ const DeviceListing = () => {
         <p>No data available. Please upload a CSV file</p>
       )}
     </div>
+
+    // //reference for interface
+    // <div>
+    //   <h3>Reference for Interface</h3>
+    //   <CTable striped bordered hover></CTable>
+    // </div>
   )
 }
 
