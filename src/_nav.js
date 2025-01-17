@@ -21,11 +21,11 @@ const _nav = [
   //   name: 'Login',
   //   to: '/login/Login',
   // },
-  {
-    component: CNavItem,
-    name: 'Login',
-    to: '/login',
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Login',
+  //   to: '/',
+  // },
   {
     component: CNavItem,
     name: 'Home',
