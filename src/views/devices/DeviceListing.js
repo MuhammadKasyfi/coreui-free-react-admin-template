@@ -72,6 +72,7 @@ const DeviceListing = () => {
           fetchedData?.[0]?.v !== undefined && fetchedData?.[0]?.v !== null
             ? fetchedData[0]?.v
             : 'N/A'
+        const time = fetchedData?.[0]?.t || 'N/A'
         allData.push({
           id: item.id,
           healthIndex,
@@ -82,6 +83,7 @@ const DeviceListing = () => {
           hartProtocolRevision: fetchedData?.[5]?.v || 'N/A',
           interface: fetchedData?.[6]?.v || 'N/A',
           criticality: fetchedData?.[7]?.v || 'N/A',
+          time,
         })
       }
     }
@@ -126,6 +128,12 @@ const DeviceListing = () => {
     }
   }
 
+  const getFormattedTime = (time) => {
+    if (time === 'N/A') return time
+    const date = new Date(time)
+    return date.toLocaleString()  // Format to a readable string
+  }
+  
   // Combine CSV data with demo data
   const getCombinedData = () => {
     return data.map((item) => {
@@ -140,6 +148,7 @@ const DeviceListing = () => {
         hartProtocolRevision: demoItem?.hartProtocolRevision || 'N/A',
         interface: getInterfaceLabel(demoItem?.interface),
         criticality: demoItem?.criticality || 'N/A',
+        time: getFormattedTime(demoItem?.time),
       }
     })
   }
@@ -216,6 +225,7 @@ const DeviceListing = () => {
                 <CTableHeaderCell>Asset Tag</CTableHeaderCell>
                 <CTableHeaderCell>Asset Location</CTableHeaderCell>
                 <CTableHeaderCell>Health Index</CTableHeaderCell>
+                <CTableHeaderCell>Timestamp</CTableHeaderCell>
                 <CTableHeaderCell>Serial Number</CTableHeaderCell>
                 <CTableHeaderCell>Manufacturer</CTableHeaderCell>
                 <CTableHeaderCell>Model Number</CTableHeaderCell>
@@ -232,6 +242,7 @@ const DeviceListing = () => {
                   <CTableDataCell>{item.AssetTag}</CTableDataCell>
                   <CTableDataCell>{item.AssetLocation}</CTableDataCell>
                   <CTableDataCell>{item.healthIndex}</CTableDataCell>
+                  <CTableDataCell>{item.time}</CTableDataCell>
                   <CTableDataCell>{item.serialNumber}</CTableDataCell>
                   <CTableDataCell>{item.manufacturer}</CTableDataCell>
                   <CTableDataCell>{item.modelNumber}</CTableDataCell>
