@@ -131,9 +131,9 @@ const DeviceListing = () => {
   const getFormattedTime = (time) => {
     if (time === 'N/A') return time
     const date = new Date(time)
-    return date.toLocaleString()  // Format to a readable string
+    return date.toLocaleString() // Format to a readable string
   }
-  
+
   // Combine CSV data with demo data
   const getCombinedData = () => {
     return data.map((item) => {
