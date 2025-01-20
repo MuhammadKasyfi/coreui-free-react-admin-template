@@ -212,7 +212,7 @@ const DeviceListing = () => {
 
         <div style={{ flex: 3 }}>
           {/* Table Section */}
-          <h3>Asset List</h3>
+          <h3>Device List</h3>
 
           {loading ? (
             <p>Loading data...</p>

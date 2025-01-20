@@ -10,8 +10,6 @@ const DevicePopulation = () => {
   const [dataManufacturer, setDataManufacturer] = useState(null)
   const [totalAssets, setTotalAssets] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [data, setData] = useState([]) // Store uploaded CSV data
-  const [demoData, setDemoData] = useState([]) // Store demo data fetched via API
 
   // Fetch demo data based on asset tag and other parameters
   const getDemoData = async (assetTag, baseIdentifier, locationPath, isa95Path) => {
