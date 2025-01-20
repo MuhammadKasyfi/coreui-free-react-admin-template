@@ -16,8 +16,8 @@ const DevicePopulation = () => {
   // Fetch demo data based on asset tag and other parameters
   const getDemoData = async (assetTag, baseIdentifier, locationPath, isa95Path) => {
     const baseUrl = 'https://localhost:8002/api/v2/read'
-    const identifier = `/${baseIdentifier}/${locationPath}/${assetTag}`
-    const isaIdentifier = `/${isa95Path}/${assetTag}`
+    const identifier = `${baseIdentifier}/${locationPath}/${assetTag}`
+    const isaIdentifier = `${isa95Path}/${assetTag}`
     const url = `${baseUrl}?identifier=${identifier}`
     const param = `identifier=${identifier}`
     const param2 = `identifier=${isaIdentifier}`
@@ -33,9 +33,10 @@ const DevicePopulation = () => {
           },
         },
       )
-      return response.data.data
+      return response?.data?.data || {}
     } catch (error) {
       console.error(`Error fetching data for ${assetTag}:`, error.response?.data || error.message)
+      return {} // Fallback to empty object
     }
   }
 
