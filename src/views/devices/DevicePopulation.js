@@ -78,24 +78,24 @@ const DevicePopulation = () => {
   const getFormattedTime = (time) => {
     if (time === 'N/A') return time
     const date = new Date(time)
-    return date.toLocaleString()  // Format to a readable string
+    return date.toLocaleString() // Format to a readable string
   }
-  
+
   // Combine CSV data with demo data
   const getCombinedData = () => {
     return data.map((item) => {
       const demoItem = demoData.find((demo) => demo.id === item.id)
       return {
         ...item,
-        healthIndex: demoItem?.healthIndex || 'N/A',
-        serialNumber: demoItem?.serialNumber || 'N/A',
+        // healthIndex: demoItem?.healthIndex || 'N/A',
+        // serialNumber: demoItem?.serialNumber || 'N/A',
         manufacturer: demoItem?.manufacturer || 'N/A',
-        modelNumber: demoItem?.modelNumber || 'N/A',
-        deviceRevision: demoItem?.deviceRevision || 'N/A',
-        hartProtocolRevision: demoItem?.hartProtocolRevision || 'N/A',
-        interface: getInterfaceLabel(demoItem?.interface),
-        criticality: demoItem?.criticality || 'N/A',
-        time: getFormattedTime(demoItem?.time),
+        // modelNumber: demoItem?.modelNumber || 'N/A',
+        // deviceRevision: demoItem?.deviceRevision || 'N/A',
+        // hartProtocolRevision: demoItem?.hartProtocolRevision || 'N/A',
+        // interface: getInterfaceLabel(demoItem?.interface),
+        // criticality: demoItem?.criticality || 'N/A',
+        // time: getFormattedTime(demoItem?.time),
       }
     })
   }
@@ -121,15 +121,15 @@ const DevicePopulation = () => {
         const time = fetchedData?.[0]?.t || 'N/A'
         allData.push({
           id: item.id,
-          healthIndex,
-          serialNumber: fetchedData?.[1]?.v || 'N/A',
+          // healthIndex,
+          // serialNumber: fetchedData?.[1]?.v || 'N/A',
           manufacturer: fetchedData?.[2]?.v || 'N/A',
-          modelNumber: fetchedData?.[3]?.v || 'N/A',
-          deviceRevision: fetchedData?.[4]?.v || 'N/A',
-          hartProtocolRevision: fetchedData?.[5]?.v || 'N/A',
-          interface: fetchedData?.[6]?.v || 'N/A',
-          criticality: fetchedData?.[7]?.v || 'N/A',
-          time,
+          // modelNumber: fetchedData?.[3]?.v || 'N/A',
+          // deviceRevision: fetchedData?.[4]?.v || 'N/A',
+          // hartProtocolRevision: fetchedData?.[5]?.v || 'N/A',
+          // interface: fetchedData?.[6]?.v || 'N/A',
+          // criticality: fetchedData?.[7]?.v || 'N/A',
+          // time,
         })
       }
     }
@@ -235,7 +235,7 @@ const DevicePopulation = () => {
                         responsive: true,
                         plugins: {
                           legend: {
-                           display: false,
+                            display: false,
                           },
                         },
                       }}
@@ -249,12 +249,13 @@ const DevicePopulation = () => {
             <CCol xs={6}>
               <CCard className="mb-4">
                 <CCardHeader>Count by Location</CCardHeader>
-                <CCardBody>
+                <CCardBody className="chart-container">
                   {dataLocation ? (
                     <CChartDoughnut
                       data={dataLocation}
                       options={{
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                           legend: {
                             position: 'top',
@@ -295,12 +296,13 @@ const DevicePopulation = () => {
             <CCol xs={6}>
               <CCard className="mb-4">
                 <CCardHeader>Count by Manufacturer</CCardHeader>
-                <CCardBody>
+                <CCardBody className="chart-container">
                   {dataManufacturer ? (
                     <CChartDoughnut
                       data={dataManufacturer}
                       options={{
                         responsive: true,
+                        maintainAspectRatio: false,
                         plugins: {
                           legend: {
                             position: 'top',

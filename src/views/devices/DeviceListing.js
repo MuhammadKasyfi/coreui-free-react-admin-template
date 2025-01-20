@@ -190,75 +190,75 @@ const DeviceListing = () => {
 
   return (
     <div>
-      <input type="file" accept=".csv" onChange={handleFileChange}/>
+      <input type="file" accept=".csv" onChange={handleFileChange} />
 
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: 1 }}>
-        {/* Filter Section */}
-        <p>Filter by Asset Location</p>
-        {uniqueLocations.map((location, index) => (
-          <CFormCheck
-            key={index}
-            label={location}
-            value={location}
-            checked={filterLocations.includes(location)}
-            onChange={handleLocationFilterChange}
-          />
-        ))}
-        <CButton color="primary" onClick={applyFilter} style={{ marginTop: '1rem' }}>
-          Apply Filter
-        </CButton>
-      </div>
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}>
+          {/* Filter Section */}
+          <p>Filter by Asset Location</p>
+          {uniqueLocations.map((location, index) => (
+            <CFormCheck
+              key={index}
+              label={location}
+              value={location}
+              checked={filterLocations.includes(location)}
+              onChange={handleLocationFilterChange}
+            />
+          ))}
+          <CButton color="primary" onClick={applyFilter} style={{ marginTop: '1rem' }}>
+            Apply Filter
+          </CButton>
+        </div>
 
-      <div style={{ flex: 3 }}>
-        {/* Table Section */}
-        <h3>Asset List</h3>
+        <div style={{ flex: 3 }}>
+          {/* Table Section */}
+          <h3>Asset List</h3>
 
-        {loading ? (
-          <p>Loading data...</p>
-        ) : filteredData.length > 0 ? (
-          <CTable striped bordered hover>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>ID</CTableHeaderCell>
-                <CTableHeaderCell>Asset Tag</CTableHeaderCell>
-                <CTableHeaderCell>Asset Location</CTableHeaderCell>
-                <CTableHeaderCell>Health Index</CTableHeaderCell>
-                <CTableHeaderCell>Timestamp</CTableHeaderCell>
-                <CTableHeaderCell>Serial Number</CTableHeaderCell>
-                <CTableHeaderCell>Manufacturer</CTableHeaderCell>
-                <CTableHeaderCell>Model Number</CTableHeaderCell>
-                <CTableHeaderCell>Device Revision</CTableHeaderCell>
-                <CTableHeaderCell>HART Protocol Revision</CTableHeaderCell>
-                <CTableHeaderCell>Interface</CTableHeaderCell>
-                <CTableHeaderCell>Criticality</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {filteredData.map((item) => (
-                <CTableRow key={item.id}>
-                  <CTableDataCell>{item.id}</CTableDataCell>
-                  <CTableDataCell>{item.AssetTag}</CTableDataCell>
-                  <CTableDataCell>{item.AssetLocation}</CTableDataCell>
-                  <CTableDataCell>{item.healthIndex}</CTableDataCell>
-                  <CTableDataCell>{item.time}</CTableDataCell>
-                  <CTableDataCell>{item.serialNumber}</CTableDataCell>
-                  <CTableDataCell>{item.manufacturer}</CTableDataCell>
-                  <CTableDataCell>{item.modelNumber}</CTableDataCell>
-                  <CTableDataCell>{item.deviceRevision}</CTableDataCell>
-                  <CTableDataCell>{item.hartProtocolRevision}</CTableDataCell>
-                  <CTableDataCell>{item.interface}</CTableDataCell>
-                  <CTableDataCell>{item.criticality}</CTableDataCell>
+          {loading ? (
+            <p>Loading data...</p>
+          ) : filteredData.length > 0 ? (
+            <CTable striped bordered hover>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell>ID</CTableHeaderCell>
+                  <CTableHeaderCell>Asset Tag</CTableHeaderCell>
+                  <CTableHeaderCell>Asset Location</CTableHeaderCell>
+                  <CTableHeaderCell>Health Index</CTableHeaderCell>
+                  <CTableHeaderCell>Timestamp</CTableHeaderCell>
+                  <CTableHeaderCell>Serial Number</CTableHeaderCell>
+                  <CTableHeaderCell>Manufacturer</CTableHeaderCell>
+                  <CTableHeaderCell>Model Number</CTableHeaderCell>
+                  <CTableHeaderCell>Device Revision</CTableHeaderCell>
+                  <CTableHeaderCell>HART Protocol Revision</CTableHeaderCell>
+                  <CTableHeaderCell>Interface</CTableHeaderCell>
+                  <CTableHeaderCell>Criticality</CTableHeaderCell>
                 </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
-        ) : (
-          <p>No data available. Please upload a CSV file.</p>
-        )}
+              </CTableHead>
+              <CTableBody>
+                {filteredData.map((item) => (
+                  <CTableRow key={item.id}>
+                    <CTableDataCell>{item.id}</CTableDataCell>
+                    <CTableDataCell>{item.AssetTag}</CTableDataCell>
+                    <CTableDataCell>{item.AssetLocation}</CTableDataCell>
+                    <CTableDataCell>{item.healthIndex}</CTableDataCell>
+                    <CTableDataCell>{item.time}</CTableDataCell>
+                    <CTableDataCell>{item.serialNumber}</CTableDataCell>
+                    <CTableDataCell>{item.manufacturer}</CTableDataCell>
+                    <CTableDataCell>{item.modelNumber}</CTableDataCell>
+                    <CTableDataCell>{item.deviceRevision}</CTableDataCell>
+                    <CTableDataCell>{item.hartProtocolRevision}</CTableDataCell>
+                    <CTableDataCell>{item.interface}</CTableDataCell>
+                    <CTableDataCell>{item.criticality}</CTableDataCell>
+                  </CTableRow>
+                ))}
+              </CTableBody>
+            </CTable>
+          ) : (
+            <p>No data available. Please upload a CSV file.</p>
+          )}
+        </div>
       </div>
     </div>
-  </div>
   )
 }
 
