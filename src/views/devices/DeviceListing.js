@@ -189,6 +189,9 @@ const DeviceListing = () => {
   }, [filterLocations, data, demoData])
 
   return (
+    <div>
+      <input type="file" accept=".csv" onChange={handleFileChange}/>
+
     <div style={{ display: 'flex' }}>
       <div style={{ flex: 1 }}>
         {/* Filter Section */}
@@ -255,6 +258,7 @@ const DeviceListing = () => {
         )}
       </div>
     </div>
+  </div>
   )
 }
 
