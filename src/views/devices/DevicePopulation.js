@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CCol, CRow, CCard, CCardBody, CCardHeader, CContainer } from '@coreui/react'
 import { CChartBar, CChartDoughnut } from '@coreui/react-chartjs'
 import { getOAuthToken } from '../../auth/authToken'
+import '../../scss/chart.scss'
 import axios from 'axios'
 
 const DevicePopulation = () => {
@@ -36,105 +37,6 @@ const DevicePopulation = () => {
     } catch (error) {
       console.error(`Error fetching data for ${assetTag}:`, error.response?.data || error.message)
     }
-  }
-
-  // Handle CSV file upload and parse it
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          const jsonData = result.data.map((row, index) => ({
-            id: `${index + 1}`,
-            ...row,
-          }))
-          setData(jsonData)
-          localStorage.setItem('uploadedCSVData', JSON.stringify(jsonData)) // Save data to localStorage
-        },
-      })
-    }
-  }
-
-  // Convert the interface value to human-readable format
-  const getInterfaceLabel = (interfaceValue) => {
-    switch (interfaceValue) {
-      case '0':
-        return 'None'
-      case '1':
-        return 'Hart'
-      case '2':
-        return 'FF'
-      case '3':
-        return 'Profibus DP'
-      case '4':
-        return 'Profibus PA'
-      default:
-        return 'Unknown'
-    }
-  }
-
-  const getFormattedTime = (time) => {
-    if (time === 'N/A') return time
-    const date = new Date(time)
-    return date.toLocaleString() // Format to a readable string
-  }
-
-  // Combine CSV data with demo data
-  const getCombinedData = () => {
-    return data.map((item) => {
-      const demoItem = demoData.find((demo) => demo.id === item.id)
-      return {
-        ...item,
-        // healthIndex: demoItem?.healthIndex || 'N/A',
-        // serialNumber: demoItem?.serialNumber || 'N/A',
-        manufacturer: demoItem?.manufacturer || 'N/A',
-        // modelNumber: demoItem?.modelNumber || 'N/A',
-        // deviceRevision: demoItem?.deviceRevision || 'N/A',
-        // hartProtocolRevision: demoItem?.hartProtocolRevision || 'N/A',
-        // interface: getInterfaceLabel(demoItem?.interface),
-        // criticality: demoItem?.criticality || 'N/A',
-        // time: getFormattedTime(demoItem?.time),
-      }
-    })
-  }
-
-  // Fetch demo data and merge it with CSV data
-  const fetchDemoData = async () => {
-    setLoading(true)
-    const allData = []
-
-    for (const item of data) {
-      const assetTag = item.AssetTag
-      if (assetTag) {
-        const fetchedData = await getDemoData(
-          item.AssetTag,
-          item.BaseIdentifier,
-          item.LocationPath,
-          item.ISA95Path,
-        )
-        const healthIndex =
-          fetchedData?.[0]?.v !== undefined && fetchedData?.[0]?.v !== null
-            ? fetchedData[0]?.v
-            : 'N/A'
-        const time = fetchedData?.[0]?.t || 'N/A'
-        allData.push({
-          id: item.id,
-          // healthIndex,
-          // serialNumber: fetchedData?.[1]?.v || 'N/A',
-          manufacturer: fetchedData?.[2]?.v || 'N/A',
-          // modelNumber: fetchedData?.[3]?.v || 'N/A',
-          // deviceRevision: fetchedData?.[4]?.v || 'N/A',
-          // hartProtocolRevision: fetchedData?.[5]?.v || 'N/A',
-          // interface: fetchedData?.[6]?.v || 'N/A',
-          // criticality: fetchedData?.[7]?.v || 'N/A',
-          // time,
-        })
-      }
-    }
-    setDemoData(allData)
-    setLoading(false)
   }
 
   // Handle the logic for bar chart and legend
@@ -227,6 +129,7 @@ const DevicePopulation = () => {
             <CCol xs={6}>
               <CCard className="mb-4">
                 <CCardHeader>Device Count by Location</CCardHeader>
+                {/* <CCardBody className="chart-container"> */}
                 <CCardBody>
                   {dataLocation ? (
                     <CChartBar
@@ -274,6 +177,7 @@ const DevicePopulation = () => {
             <CCol xs={6}>
               <CCard className="mb-4">
                 <CCardHeader>Asset Count by Manufacturer</CCardHeader>
+                {/* <CCardBody className="chart-container"> */}
                 <CCardBody>
                   {dataManufacturer ? (
                     <CChartBar

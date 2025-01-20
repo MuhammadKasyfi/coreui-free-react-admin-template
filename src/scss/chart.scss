@@ -1,4 +1,10 @@
+@mixin chart-style($height, $width) {
+height: $height;
+width: $width;
+margin: 10px;
+align-items: center;
+}
+
 .chart-container {
-    height: 300px; /* Adjust to your desired height */
+    @include chart-style(300px, 600px)
   }
-  
