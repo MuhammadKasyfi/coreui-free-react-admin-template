@@ -81,22 +81,37 @@ const Home = () => {
                 <CCardBody>
                   <GaugeComponent
                     arc={{
+                      width: 0.05,
+                      padding: 0,
                       subArcs: [
-                        { limit: 20, color: '#EA4228', showTick: true },
-                        { limit: 40, color: '#F58B19', showTick: true },
-                        { limit: 60, color: '#F5CD19', showTick: true },
+                        { limit: 70, color: '#EA4228', showTick: true },
+                        // { limit: 40, color: '#F58B19', showTick: true },
+                        { limit: 80, color: '#F5CD19', showTick: true },
                         { limit: 100, color: '#5BE12C', showTick: true },
                       ],
-                      thickness: 8,
-                      labels: {
-                        count: 11,
-                        precision: 0,
-                      },
                     }}
-                    pointer={{
-                      type: 'arrow',
-                      color: '#000000',
-                    }}
+                    // pointer={{
+                    //   elastic: true,
+                    //   animationDelay: 0
+                    // }}
+                    labels={{
+                      tickLabels: {
+                        type: "outer",
+                        ticks: [
+                          { value: 0 },
+                          { value: 10 },
+                          { value: 20 },
+                          { value: 30 },
+                          { value: 40 },
+                          { value: 50 },
+                          { value: 60 },
+                          { value: 70 },
+                          { value: 80 },
+                          { value: 90 },
+                          { value: 100 },
+                        ],
+                    }
+                  }}
                     value={asset.healthIndex}
                   />
                 </CCardBody>
