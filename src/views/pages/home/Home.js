@@ -77,7 +77,7 @@ const Home = () => {
           {assets.map((asset, index) => (
             <CCol xs={12} sm={6} md={4} key={index}>
               <CCard className="mb-4">
-                <CCardHeader>{`Asset: ${asset.AssetLocation}/${asset.AssetTag}`}</CCardHeader>
+                <CCardHeader>{`Health Index Asset: ${asset.AssetLocation}/${asset.AssetTag}`}</CCardHeader>
                 <CCardBody>
                   <GaugeComponent
                     arc={{
