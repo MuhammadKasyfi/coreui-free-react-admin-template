@@ -6,7 +6,7 @@ import { getOAuthToken } from '../../../auth/authToken'
 import axios from 'axios'
 
 const Home = () => {
-  const [assets, setAssets] = useState([]) // Store asset data including healthIndex
+  const [assets, setAssets] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Fetch data for all assets
@@ -31,10 +31,9 @@ const Home = () => {
 
       // Fetch healthIndex for each asset
       const assetPromises = parsedData.map(async (row) => {
-        const { AssetTag, AssetLocation, BaseIdentifier, LocationPath, Isa95Path } = row
+        const { AssetTag, AssetLocation, BaseIdentifier, LocationPath } = row
         const baseUrl = 'https://localhost:8002/api/v2/read'
         const identifier = `/${BaseIdentifier}/${LocationPath}/${AssetTag}`
-        // const isaIdentifier = `/${Isa95Path}/${AssetTag}`
         const url = `${baseUrl}?identifier=${identifier}`
 
         try {
@@ -45,14 +44,14 @@ const Home = () => {
             },
           })
 
-          const healthIndex = response.data.data?.[0]?.v || 0 // Assuming health index is the first value
+          const healthIndex = response.data.data?.[0]?.v || 0
           return { AssetTag, AssetLocation, healthIndex }
         } catch (error) {
           console.error(
             `Error fetching healthIndex for ${AssetTag}:`,
             error.response?.data || error.message,
           )
-          return { AssetTag, AssetLocation, healthIndex: 0 } // Default to 0 if an error occurs
+          return { AssetTag, AssetLocation, healthIndex: 0 }
         }
       })
 
@@ -88,8 +87,17 @@ const Home = () => {
                         { limit: 60, color: '#F5CD19', showTick: true },
                         { limit: 100, color: '#5BE12C', showTick: true },
                       ],
+                      thickness: 8,
+                      labels: {
+                        count: 11,
+                        precision: 0,
+                      },
                     }}
-                    value={asset.healthIndex} // Use the healthIndex value here
+                    pointer={{
+                      type: 'arrow',
+                      color: '#000000',
+                    }}
+                    value={asset.healthIndex}
                   />
                 </CCardBody>
               </CCard>
@@ -102,5 +110,3 @@ const Home = () => {
 }
 
 export default Home
-
-
