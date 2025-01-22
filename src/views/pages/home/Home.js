@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { CCol, CRow, CCard, CCardBody, CCardHeader, CContainer } from '@coreui/react'
 import GaugeComponent from 'react-gauge-component'
-import { getOAuthToken } from '../../auth/authToken'
+import { getOAuthToken } from '../../../auth/authToken'
 import axios from 'axios'
 
 const Home = () => {
@@ -31,10 +31,10 @@ const Home = () => {
 
       // Fetch healthIndex for each asset
       const assetPromises = parsedData.map(async (row) => {
-        const { AssetTag, BaseIdentifier, LocationPath, Isa95Path } = row
+        const { AssetTag, AssetLocation, BaseIdentifier, LocationPath, Isa95Path } = row
         const baseUrl = 'https://localhost:8002/api/v2/read'
         const identifier = `/${BaseIdentifier}/${LocationPath}/${AssetTag}`
-        const isaIdentifier = `/${Isa95Path}/${AssetTag}`
+        // const isaIdentifier = `/${Isa95Path}/${AssetTag}`
         const url = `${baseUrl}?identifier=${identifier}`
 
         try {
@@ -46,13 +46,13 @@ const Home = () => {
           })
 
           const healthIndex = response.data.data?.[0]?.v || 0 // Assuming health index is the first value
-          return { AssetTag, healthIndex }
+          return { AssetTag, AssetLocation, healthIndex }
         } catch (error) {
           console.error(
             `Error fetching healthIndex for ${AssetTag}:`,
             error.response?.data || error.message,
           )
-          return { AssetTag, healthIndex: 0 } // Default to 0 if an error occurs
+          return { AssetTag, AssetLocation, healthIndex: 0 } // Default to 0 if an error occurs
         }
       })
 
@@ -78,7 +78,7 @@ const Home = () => {
           {assets.map((asset, index) => (
             <CCol xs={12} sm={6} md={4} key={index}>
               <CCard className="mb-4">
-                <CCardHeader>{`Asset: ${asset.AssetTag}`}</CCardHeader>
+                <CCardHeader>{`Asset: ${asset.AssetLocation}/${asset.AssetTag}`}</CCardHeader>
                 <CCardBody>
                   <GaugeComponent
                     arc={{
@@ -102,3 +102,5 @@ const Home = () => {
 }
 
 export default Home
+
+
