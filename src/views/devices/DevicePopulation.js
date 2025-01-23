@@ -6,7 +6,7 @@ import '../../scss/chart.scss'
 import axios from 'axios'
 
 const DevicePopulation = () => {
-  const [dataLocation, setDataLocation] = useState(null)
+  const [dataPlatform, setDataPlatform] = useState(null)
   const [dataManufacturer, setDataManufacturer] = useState(null)
   const [totalAssets, setTotalAssets] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -59,14 +59,14 @@ const DevicePopulation = () => {
         }
 
         const parsedData = JSON.parse(csvData)
-        const locationCounts = {}
+        const platformCounts = {}
         const manufacturerCounts = {}
         let total = 0
 
         const manufacturerPromises = parsedData.map(async (row) => {
-          const location = row['AssetLocation']
-          if (location) {
-            locationCounts[location] = (locationCounts[location] || 0) + 1
+          const platform = row['Platform']
+          if (platform) {
+            platformCounts[platform] = (platformCounts[platform] || 0) + 1
             total += 1
           }
 
@@ -80,11 +80,11 @@ const DevicePopulation = () => {
         await Promise.all(manufacturerPromises)
 
         // Set the state with processed data for charts
-        setDataLocation({
-          labels: Object.keys(locationCounts),
+        setDataPlatform({
+          labels: Object.keys(platformCounts),
           datasets: [
             {
-              data: Object.values(locationCounts),
+              data: Object.values(platformCounts),
               backgroundColor: ['#FF6384', '#36A2EB', '#41B883', '#E46651', '#00D8FF', '#DD1B16'],
             },
           ],
@@ -127,12 +127,12 @@ const DevicePopulation = () => {
           <CRow>
             <CCol xs={6}>
               <CCard className="mb-4">
-                <CCardHeader>Device Count by Location</CCardHeader>
+                <CCardHeader>Device Count by Platform</CCardHeader>
                 {/* <CCardBody className="chart-container"> */}
                 <CCardBody>
-                  {dataLocation ? (
+                  {dataPlatform ? (
                     <CChartBar
-                      data={dataLocation}
+                      data={dataPlatform}
                       options={{
                         responsive: true,
                         plugins: {
@@ -150,11 +150,11 @@ const DevicePopulation = () => {
             </CCol>
             <CCol xs={6}>
               <CCard className="mb-4">
-                <CCardHeader>Count by Location</CCardHeader>
+                <CCardHeader>Count by Platform</CCardHeader>
                 <CCardBody className="chart-container">
-                  {dataLocation ? (
+                  {dataPlatform ? (
                     <CChartDoughnut
-                      data={dataLocation}
+                      data={dataPlatform}
                       options={{
                         responsive: true,
                         maintainAspectRatio: false,
@@ -175,7 +175,7 @@ const DevicePopulation = () => {
           <CRow>
             <CCol xs={6}>
               <CCard className="mb-4">
-                <CCardHeader>Asset Count by Manufacturer</CCardHeader>
+                <CCardHeader>Device Count by Manufacturer</CCardHeader>
                 {/* <CCardBody className="chart-container"> */}
                 <CCardBody>
                   {dataManufacturer ? (

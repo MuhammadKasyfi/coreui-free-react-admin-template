@@ -18,7 +18,7 @@ const DeviceListing = () => {
   const [data, setData] = useState([]) // Store uploaded CSV data
   const [demoData, setDemoData] = useState([]) // Store demo data fetched via API
   const [loading, setLoading] = useState(false)
-  const [filterLocations, setFilterLocations] = useState([]) // Selected filter locations
+  const [filterPlatform, setFilterPlatform] = useState([]) // Selected filter locations
   const [filteredData, setFilteredData] = useState([]) // Filtered data
 
   useEffect(() => {
@@ -155,9 +155,9 @@ const DeviceListing = () => {
 
   // Handle checkbox change for filtering
   const handleLocationFilterChange = (e) => {
-    const location = e.target.value
-    setFilterLocations((prev) =>
-      prev.includes(location) ? prev.filter((item) => item !== location) : [...prev, location],
+    const platform = e.target.value
+    setFilterPlatform((prev) =>
+      prev.includes(platform) ? prev.filter((item) => item !== platform) : [...prev, platform],
     )
   }
 
@@ -166,10 +166,10 @@ const DeviceListing = () => {
     const combinedData = getCombinedData()
 
     // If no filter is selected, show all data
-    if (filterLocations.length === 0) {
+    if (filterPlatform.length === 0) {
       setFilteredData(combinedData)
     } else {
-      const filtered = combinedData.filter((item) => filterLocations.includes(item.AssetLocation))
+      const filtered = combinedData.filter((item) => filterPlatform.includes(item.Platform))
       setFilteredData(filtered)
     }
   }
@@ -179,14 +179,14 @@ const DeviceListing = () => {
   }, [data])
 
   // Extract unique asset locations from data
-  const uniqueLocations = Array.from(new Set(data.map((item) => item.AssetLocation)))
+  const uniquePlatforms = Array.from(new Set(data.map((item) => item.Platform)))
 
   // Set filtered data when no filter is applied
   useEffect(() => {
-    if (filterLocations.length === 0) {
+    if (filterPlatform.length === 0) {
       setFilteredData(getCombinedData()) // Show all data if no filter
     }
-  }, [filterLocations, data, demoData])
+  }, [filterPlatform, data, demoData])
 
   return (
     <div>
@@ -195,13 +195,13 @@ const DeviceListing = () => {
       <div style={{ display: 'flex' }}>
         <div style={{ flex: 1 }}>
           {/* Filter Section */}
-          <p>Filter by Asset Location</p>
-          {uniqueLocations.map((location, index) => (
+          <p>Filter by Platform</p>
+          {uniquePlatforms.map((platform, index) => (
             <CFormCheck
               key={index}
-              label={location}
-              value={location}
-              checked={filterLocations.includes(location)}
+              label={platform}
+              value={platform}
+              checked={filterPlatform.includes(platform)}
               onChange={handleLocationFilterChange}
             />
           ))}
@@ -221,8 +221,8 @@ const DeviceListing = () => {
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell>ID</CTableHeaderCell>
-                  <CTableHeaderCell>Asset Tag</CTableHeaderCell>
-                  <CTableHeaderCell>Asset Location</CTableHeaderCell>
+                  <CTableHeaderCell>AMS Tag</CTableHeaderCell>
+                  <CTableHeaderCell>Platform</CTableHeaderCell>
                   <CTableHeaderCell>Health Index</CTableHeaderCell>
                   <CTableHeaderCell>Timestamp</CTableHeaderCell>
                   <CTableHeaderCell>Serial Number</CTableHeaderCell>
@@ -230,7 +230,7 @@ const DeviceListing = () => {
                   <CTableHeaderCell>Model Number</CTableHeaderCell>
                   <CTableHeaderCell>Device Revision</CTableHeaderCell>
                   <CTableHeaderCell>HART Protocol Revision</CTableHeaderCell>
-                  <CTableHeaderCell>Interface</CTableHeaderCell>
+                  <CTableHeaderCell>Protocol</CTableHeaderCell>
                   <CTableHeaderCell>Criticality</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -239,7 +239,7 @@ const DeviceListing = () => {
                   <CTableRow key={item.id}>
                     <CTableDataCell>{item.id}</CTableDataCell>
                     <CTableDataCell>{item.AssetTag}</CTableDataCell>
-                    <CTableDataCell>{item.AssetLocation}</CTableDataCell>
+                    <CTableDataCell>{item.Platform}</CTableDataCell>
                     <CTableDataCell>{item.healthIndex}</CTableDataCell>
                     <CTableDataCell>{item.time}</CTableDataCell>
                     <CTableDataCell>{item.serialNumber}</CTableDataCell>

@@ -31,7 +31,7 @@ const Home = () => {
 
       // Fetch healthIndex for each asset
       const assetPromises = parsedData.map(async (row) => {
-        const { AssetTag, AssetLocation, BaseIdentifier, LocationPath } = row
+        const { AssetTag, Platform, BaseIdentifier, LocationPath } = row
         const baseUrl = 'https://localhost:8002/api/v2/read'
         const identifier = `/${BaseIdentifier}/${LocationPath}/${AssetTag}`
         const url = `${baseUrl}?identifier=${identifier}`
@@ -45,13 +45,13 @@ const Home = () => {
           })
 
           const healthIndex = response.data.data?.[0]?.v || 0
-          return { AssetTag, AssetLocation, healthIndex }
+          return { AssetTag, Platform, healthIndex }
         } catch (error) {
           console.error(
             `Error fetching healthIndex for ${AssetTag}:`,
             error.response?.data || error.message,
           )
-          return { AssetTag, AssetLocation, healthIndex: 0 }
+          return { AssetTag, Platform, healthIndex: 0 }
         }
       })
 
@@ -77,7 +77,7 @@ const Home = () => {
           {assets.map((asset, index) => (
             <CCol xs={12} sm={6} md={4} key={index}>
               <CCard className="mb-4">
-                <CCardHeader>{`Health Index Asset: ${asset.AssetLocation}/${asset.AssetTag}`}</CCardHeader>
+                <CCardHeader>{`Health Index Asset: ${asset.Platform}/${asset.AssetTag}`}</CCardHeader>
                 <CCardBody>
                   <GaugeComponent
                     arc={{
@@ -85,15 +85,15 @@ const Home = () => {
                       padding: 0,
                       subArcs: [
                         { limit: 70, color: '#EA4228', showTick: true },
-                        // { limit: 40, color: '#F58B19', showTick: true },
                         { limit: 80, color: '#F5CD19', showTick: true },
                         { limit: 100, color: '#5BE12C', showTick: true },
                       ],
                     }}
-                    // pointer={{
-                    //   elastic: true,
-                    //   animationDelay: 0
-                    // }}
+                    pointer={{
+                      type: 'arrow',
+                      color: '#000',
+                      size: 0.1, // you can tweak this for better pointer size
+                    }}
                     labels={{
                       tickLabels: {
                         type: "outer",
@@ -110,7 +110,7 @@ const Home = () => {
                           { value: 90 },
                           { value: 100 },
                         ],
-                    }
+                      }                      
                   }}
                     value={asset.healthIndex}
                   />
