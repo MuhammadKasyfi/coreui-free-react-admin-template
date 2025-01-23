@@ -33,13 +33,18 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Alert Summary Bravo',
-        to: '/dashboard/AlertSummaryBravo',
+        name: 'Alert Summary HART Multiplexer',
+        to: '/dashboard/AlertSummaryHARTMultiplexer',
       },
       {
         component: CNavItem,
-        name: 'Asset List',
-        to: '/dashboard/AssetList',
+        name: 'Alert Summary DeltaV',
+        to: '/dashboard/AlertSummaryDeltaV',
+      },
+      {
+        component: CNavItem,
+        name: 'Alert Summary Wireless Gateway',
+        to: '/dashboard/AlertSummaryWirelessGateway',
       },
       {
         component: CNavItem,

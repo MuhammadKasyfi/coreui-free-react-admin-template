@@ -1,11 +1,18 @@
 import { element } from 'prop-types'
+import react from 'react'
 import React from 'react'
 
 // const Login = React.lazy(() => import('./pages/login/Login.js'))
 const Home = React.lazy(() => import('./views/pages/home/Home'))
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
-const AlertSummaryBravo = React.lazy(() => import('./views/dashboard/AlertSummaryBravo'))
+const AlertSummaryHARTMultiplexer = React.lazy(
+  () => import('./views/dashboard/AlertSummaryHARTMultiplexer'),
+)
+const AlertSummaryDeltaV = React.lazy(() => import('./views/dashboard/AlertSummaryDeltaV'))
+const AlertSummaryWirelessGateway = React.lazy(
+  () => import('./views/dashboard/AlertSummaryWirelessGateway'),
+)
 const AssetList = React.lazy(() => import('./views/dashboard/AssetList'))
 const DeviceListing = React.lazy(() => import('./views/devices/DeviceListing'))
 const DevicePopulation = React.lazy(() => import('./views/devices/DevicePopulation'))
@@ -63,7 +70,17 @@ const routes = [
   { path: '/', exact: true, name: 'Login' },
   { path: '/home', name: 'Home', element: Home },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/dashboard/alertSummaryBravo', name: AlertSummaryBravo, element: AlertSummaryBravo },
+  {
+    path: '/dashboard/alertSummaryHARTMultiplexer',
+    name: AlertSummaryHARTMultiplexer,
+    element: AlertSummaryHARTMultiplexer,
+  },
+  { path: '/dashboard/alertSummaryDeltaV', name: AlertSummaryDeltaV, element: AlertSummaryDeltaV },
+  {
+    path: '/dashboard/alertSummaryWirelessGateway',
+    name: AlertSummaryWirelessGateway,
+    element: AlertSummaryWirelessGateway,
+  },
   { path: '/dashboard/assetList', name: AssetList, element: AssetList },
   { path: '/devices/DeviceListing', name: DeviceListing, element: DeviceListing },
   { path: '/devices/DevicePopulation', name: DevicePopulation, element: DevicePopulation },
