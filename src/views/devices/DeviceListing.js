@@ -131,7 +131,7 @@ const DeviceListing = () => {
   const getFormattedTime = (time) => {
     if (time === 'N/A') return time
     const date = new Date(time)
-    return date.toLocaleString() // Format to a readable string
+    return date.toLocaleString()
   }
 
   // Combine CSV data with demo data
@@ -165,7 +165,6 @@ const DeviceListing = () => {
   const applyFilter = () => {
     const combinedData = getCombinedData()
 
-    // If no filter is selected, show all data
     if (filterPlatform.length === 0) {
       setFilteredData(combinedData)
     } else {
@@ -178,13 +177,13 @@ const DeviceListing = () => {
     if (data.length > 0) fetchDemoData()
   }, [data])
 
-  // Extract unique asset locations from data
+
   const uniquePlatforms = Array.from(new Set(data.map((item) => item.Platform)))
 
-  // Set filtered data when no filter is applied
+
   useEffect(() => {
     if (filterPlatform.length === 0) {
-      setFilteredData(getCombinedData()) // Show all data if no filter
+      setFilteredData(getCombinedData())
     }
   }, [filterPlatform, data, demoData])
 
